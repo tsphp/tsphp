@@ -1,0 +1,437 @@
+<!--
+/*
+ * Copyright 2012 Robert Stoll <rstoll@tutteli.ch>
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ */
+-->
+<!--
+ * Modified version of build.xml created by
+ * Roland Gisler, Hochschule Luzern Technik & Architektur, Switzerland 
+ * Original file was released under Apache License 2.0 as well
+ *
+-->
+<project name="TSPHP" default="build" basedir="." xmlns:jacoco="antlib:org.jacoco.ant">
+
+   <!-- Properties hierarchisch einlesen -->
+   <property file="${basedir}/build.properties" />
+   <property file="${basedir}/../build.properties" />
+   <property file="${user.home}/build.properties" />
+
+   <!-- project-properties (last defaults), set them in build.properties!) -->
+   <property name="proj.modul" value="xxx" />
+   <property name="proj.group" value="gxx" />
+   <property name="proj.name" value="template" />
+   <property name="proj.version" value="0.0.0" />
+   <property name="proj.startclass" value="ch.hslu.demo.Demo" />
+   <property name="proj.autor" value="Vorname Nachname" />
+
+   <!-- environment -->
+   <property environment="env" />
+
+   <!-- setting source location -->
+   <property name="bin" location="${basedir}/bin" />
+   <property name="lib" location="${basedir}/lib" />
+   <property name="libdev" location="${lib}/dev" />
+   <property name="src" location="${basedir}/src" />
+   <property name="src.main" location="${src}/main/java" />
+   <property name="src.test" location="${src}/test/java" />
+   <property name="src.idl" location="${src}/main/idl" />
+
+   <!-- setting target locations -->
+   <property name="target" location="${basedir}/build" />
+   <property name="classes" location="${target}/classes" />
+   <property name="test-classes" location="${target}/classes-test" />
+   <property name="dist" location="${target}/dist" />
+   <property name="generated" location="${target}/generated" />
+   <property name="classycle" location="${target}/classycle" /> 
+   <property name="javadoc" location="${target}/javadoc" />
+   <property name="junit" location="${target}/junit" />
+   <property name="coverage" location="${target}/coverage" />
+   <property name="checkstyle" location="${target}/checkstyle" />
+   <property name="pmd" location="${target}/pmd" />
+
+   <!-- setting general properties -->
+   <property name="proj.java.version" value="1.7" />
+
+   <!-- calculated properties -->
+   <property name="distname" value="${proj.name}-${proj.version}" />
+   <property name="coverage.data" value="${coverage}/jacoco.exec" />
+   <property name="checkstyle.config.file"
+             value="${libdev}/checkstyle/cfg/tsphp_checks.xml" />
+   <property name="pmd.config.file" value="${libdev}/pmd/cfg/pmd_hslu.xml" />
+
+   <!-- define runtime libraries -->
+   <path id="libset">
+      <fileset dir="${lib}">
+         <include name="*.jar" />
+      </fileset>
+   </path>
+
+   <!-- define build-time libraries (simplified)-->
+   <path id="libsetdev">
+      <fileset dir="${libdev}">
+         <include name="**/*.jar" />
+      </fileset>
+   </path>
+
+   <!-- Taskdef for coverage -->
+   <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
+      <classpath path="${libdev}/jacoco/jacocoant.jar" />
+   </taskdef>
+
+   <!--====================================================================-->
+   <!-- info -->
+   <!--====================================================================-->
+   <target name="info" description="display runtime version info">
+      <echo message="==========================================" level="info" />
+      <echo message=" Building: ${ant.project.name}" level="info" />
+      <echo message="==========================================" level="info" />
+      <echo message=" Plattform    : ${os.name}" level="info" />
+      <echo message=" Java Version : ${java.version} ${java.vendor}"
+            level="info" />
+      <echo message=" ANT Version  : ${ant.version}" level="info" />
+   </target>
+
+   <!-- ================================================================== -->
+   <!-- Target: init -->
+   <!-- ================================================================== -->
+   <target name="init" depends="info" description="create directory structure">
+      <mkdir dir="${classes}" />
+      <mkdir dir="${test-classes}" />
+      <mkdir dir="${generated}" />
+   </target>
+
+   <!-- ================================================================== -->
+   <!-- Target: generate -->
+   <!-- ================================================================== -->
+   <target name="generate" depends="init" description="generate source code">
+   </target>
+
+   <!-- ================================================================== -->
+   <!-- Target: comile -->
+   <!-- ================================================================== -->
+   <target name="compile"
+           depends="generate"
+           description="compile the source and tests ">
+      <javac destdir="${classes}"
+             source="${proj.java.version}"
+             target="${proj.java.version}"
+             debug="yes"
+             includeAntRuntime="false"
+             fork="true">
+         <src path="${src.main}" />
+         <src path="${generated}" />
+         <classpath>
+            <path refid="libset" />
+         </classpath>
+      </javac>
+      <copy todir="${classes}">
+         <fileset dir="${src.main}">
+            <include name="**/*.properties" />
+            <include name="**/*.xml" />
+         </fileset>
+      </copy>
+      <javac srcdir="${src.test}"
+             destdir="${test-classes}"
+             source="${proj.java.version}"
+             target="${proj.java.version}"
+             debug="yes"
+             includeAntRuntime="false"
+             fork="true">
+         <classpath>
+            <pathelement path="${classes}" />
+            <path refid="libset" />
+            <path refid="libsetdev" />
+         </classpath>
+      </javac>
+   </target>
+
+   <!-- ================================================================== -->
+   <!-- Target: jar -->
+   <!-- ================================================================== -->
+   <target name="jar" depends="compile" description="create jar">
+      <mkdir dir="${target}/lib" />
+      <jar jarfile="${target}/lib/${distname}.jar" basedir="${classes}">
+         <manifest>
+            <attribute name="Implementation-Title" value="${proj.name}" />
+            <attribute name="Implementation-Version" value="${proj.version}" />
+            <attribute name="Implementation-Vendor" value="" />
+            <attribute name="Implementation-User" value="${proj.autor}" />
+            <attribute name="Built-By" value="${proj.autor}" />
+            <attribute name="Sealed" value="false" />
+            <attribute name="Main-Class" value="${proj.startclass}" />
+         </manifest>
+      </jar>
+   </target>
+
+   <!-- ================================================================== -->
+   <!-- Target: test -->
+   <!-- ================================================================== -->
+   <target name="test" depends="jar" description="executes unittests">
+      <mkdir dir="${junit}" />
+   	  <mkdir dir="${coverage}" />
+   	  <touch file="${coverage.data}" />
+      <jacoco:agent property="test.vm.param" destfile="${coverage.data}"/>
+      <junit printsummary="off"
+             haltonfailure="false"
+             fork="true"
+             forkmode="once"
+             showoutput="true"
+             failureproperty="test.failed">
+         <jvmarg value="${test.vm.param}" />
+         <sysproperty key="proj.basedir" value="${basedir}" />
+         <formatter usefile="false" type="brief" />
+         <formatter type="xml" />
+         <batchtest todir="${junit}">
+            <fileset dir="${src.test}">
+               <include name="**/*Test.java" />
+               <exclude name="**/AllTest.java" />
+            </fileset>
+         </batchtest>
+         <classpath>
+            <path location="${test-classes}" />
+            <path location="${classes}" />
+            <path refid="libset" />
+            <path refid="libsetdev" />
+         </classpath>
+      </junit>
+      <junit.report />
+      <coverage.report />
+      <fail message="JUnit tests FAILED!" if="test.failed" />
+   </target>
+
+   <!-- ================================================================== -->
+   <!-- Target: checkstyle -->
+   <!-- ================================================================== -->
+   <target name="checkstyle" depends="init" description="checkstyle report">
+      <taskdef resource="checkstyletask.properties" classpathref="libsetdev" />
+      <mkdir dir="${checkstyle}" />
+      <checkstyle config="${checkstyle.config.file}" failonviolation="false">
+         <fileset dir="${src.main}" includes="**/*.java" />
+         <formatter type="xml" toFile="${checkstyle}/checkstyle.xml" />
+      </checkstyle>
+      <xslt in="${checkstyle}/checkstyle.xml"
+            out="${checkstyle}/index.html"
+            style="${libdev}/checkstyle/style/checkstyle-noframes-severity-sorted.xsl" />
+   </target>
+
+   <!-- ================================================================== -->
+   <!-- Target: classycle -->
+   <!-- ================================================================== -->
+   <target name="classycle" depends="jar" description="classycle report">
+      <taskdef name="classycleReport" classname="classycle.ant.ReportTask" classpathref="libsetdev" />
+      <mkdir dir="${classycle}" />
+      <classycleReport reportFile="${classycle}/classycle.xml">
+         <fileset dir="${target}/lib/">
+            <include name="${distname}.jar" />
+         </fileset>
+      </classycleReport>
+      <xslt in="${classycle}/classycle.xml" out="${classycle}/index.html" style="${libdev}/classycle/style/reportXMLtoHTML.xsl" />
+      <copy todir="${classycle}/images">
+         <fileset dir="${libdev}/classycle/images" includes="*.png" />
+      </copy>
+   </target> 
+   
+   <!-- ================================================================== -->
+   <!-- Target: pmd -->
+   <!-- ================================================================== -->
+   <target name="pmd" depends="init" description="pmd report">
+      <taskdef name="pmd"
+               classname="net.sourceforge.pmd.ant.PMDTask"
+               classpathref="libsetdev" />
+      <mkdir dir="${pmd}" />
+      <pmd rulesetfiles="${pmd.config.file}">
+         <formatter type="xml"
+                    toFile="${pmd}/pmd.xml"
+                    linkPrefix="../java2html/" />
+         <fileset dir="${src.main}">
+            <include name="**/*.java" />
+         </fileset>
+      </pmd>
+      <xslt in="${pmd}/pmd.xml"
+            out="${pmd}/index.html"
+            style="${libdev}/pmd/style/pmd-report-per-class.xslt" />
+   </target>
+
+   <!-- ================================================================== -->
+   <!-- Target: javadoc -->
+   <!-- ================================================================== -->
+   <target name="javadoc" depends="init" description="create JavaDoc">
+      <mkdir dir="${javadoc}" />
+      <javadoc defaultexcludes="yes"
+               classpathref="libset"
+               private="true"
+               destdir="${javadoc}"
+               encoding="utf-8"
+               author="true"
+               version="true"
+               use="true"
+               windowtitle="${proj.name}"
+               overview="${src.main}/overview.html">
+         <doctitle>
+            <![CDATA[<h1>Dokumentation</h1>]]>
+         </doctitle>
+         <bottom>
+            <![CDATA[<i>Copyright 2012 Hochschule Luzern Technik & Architektur, Switzerland</i>]]>
+         </bottom>
+         <fileset dir="${src.main}">
+            <include name="**/*.java" />
+         </fileset>
+      </javadoc>
+      <zip destfile="${javadoc}/javadoc.zip">
+         <fileset dir="${javadoc}">
+            <include name="**/*" />
+            <exclude name="**/*.zip" />
+         </fileset>
+      </zip>
+   </target>
+
+   <!-- ================================================================== -->
+   <!-- Target: dist -->
+   <!-- Hinweis: Spezielle Reihenfolge, damit QS-Reports auch erstellt -->
+   <!--          werden, wenn Fehler vorhanden sind (compile, test etc.) -->
+   <!-- ================================================================== -->
+   <target name="dist"
+           depends="clean, report, jar, build"
+           description="create distributions">
+      <mkdir dir="${target}/dist" />
+      <zip destfile="${target}/dist/${distname}-bin.zip">
+         <zipfileset dir="${basedir}" prefix="${distname}">
+            <include name="README" />
+         </zipfileset>
+         <zipfileset dir="${bin}" prefix="${distname}/bin">
+            <include name="*" />
+         </zipfileset>
+         <zipfileset dir="${target}/lib" prefix="${distname}/lib">
+            <include name="*.jar" />
+         </zipfileset>
+         <zipfileset dir="${lib}" prefix="${distname}/lib">
+            <include name="*.jar" />
+         </zipfileset>
+         <zipfileset dir="${javadoc}"  prefix="${distname}/doc">
+            <include name="**/*.*" />
+            <exclude name="javadoc.zip" />
+         </zipfileset>
+      </zip>
+      <zip destfile="${target}/dist/${distname}-src.zip">
+         <zipfileset dir="${basedir}" prefix="${proj.name}">
+            <include name="**/*" />
+            <exclude name="build/**" />
+            <exclude name="nbproject/**" />
+            <exclude name="target/**" />
+            <exclude name=".*/**" />
+            <exclude name="pom.xml" />
+            <exclude name="*.jenkins" />
+         </zipfileset>
+      </zip>
+   </target>
+
+   <!-- ================================================================== -->
+   <!-- Target: run -->
+   <!-- ================================================================== -->
+   <target name="run" depends="jar" description="run the project">
+      <java classname="${proj.startclass}">
+         <classpath>
+            <path location="${target}/lib/${distname}.jar" />
+            <path refid="libset" />
+         </classpath>
+      </java>
+   </target>
+
+   <!-- ================================================================== -->
+   <!-- Target: clean -->
+   <!-- ================================================================== -->
+   <target name="clean" description="clean up">
+      <delete includeemptydirs="true" quiet="true">
+         <fileset dir="${basedir}/.sonar" />
+         <fileset dir="${target}" excludes="eclipse/**/*" />
+      </delete>
+   </target>
+
+   <!-- ================================================================== -->
+   <!-- Target: reports -->
+   <!-- ================================================================== -->
+   <target name="report"
+           depends="checkstyle,pmd,javadoc,classycle"
+           description="complete reports">
+   </target>
+
+   <!-- ================================================================== -->
+   <!-- Target: build -->
+   <!-- ================================================================== -->
+   <target name="build" depends="jar, test" description="complete build">
+   </target>
+   
+   <!-- ================================================================== -->
+   <!-- Target: sonar -->
+   <!-- ================================================================== -->
+   <target name="sonar" depends="dist" description="sonar, only for use on buildserver">
+      <property name="sonar.dynamicAnalysis" value="reuseReports" />
+      <property name="sonar.surefire.reportsPath" value="${junit}" />
+      <property name="sonar.jacoco.reportPath" value="${coverage}/jacoco.exec" />
+      <property name="sonar.projectName" value="${proj.modul}-${proj.group}-${proj.name}" />
+      <property name="sonar.java.source" value="${proj.java.version}" />
+      <property name="sonar.sources" value="${src.main}" />
+      <property name="sonar.tests" value="${src.test}" />
+      <property name="sonar.binaries" value="${classes}"/>
+      <pathconvert property="sonar.libraries" refid="libsetdev" pathsep="," />      
+      <property name="sonar.verbose" value="false" />
+      <taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml">
+         <classpath path="${libdev}/sonar/sonar-ant-task-1.3.jar" />
+      </taskdef>
+      <sonar:sonar key="ch.tutteli.tsphp:${proj.modul}-${proj.group}-${proj.name}" version="${proj.version}" xmlns:sonar="antlib:org.sonar.ant" />
+   </target>
+
+   <!-- ****************************************************************** -->
+   <!-- * MACROS  -->
+   <!-- ****************************************************************** -->
+
+   <!-- ================================================================== -->
+   <!-- Macro: junit.report -->
+   <!-- ================================================================== -->
+   <macrodef name="junit.report">
+      <sequential>
+         <junitreport todir="${junit}">
+            <fileset dir="${junit}">
+               <include name="TEST-*.xml" />
+            </fileset>
+            <report format="frames" todir="${junit}" />
+         </junitreport>
+      </sequential>
+   </macrodef>
+
+   <!-- ================================================================== -->
+   <!-- Macro: coverage.report -->
+   <!-- ================================================================== -->
+   <macrodef name="coverage.report">
+      <sequential>
+         <jacoco:report>
+            <executiondata>
+               <file file="${coverage.data}" />
+            </executiondata>
+            <structure name="${distname}">
+               <classfiles>
+                  <fileset dir="${classes}" excludes="**/ch/tutteli/tsphp/Main.class"/>
+               </classfiles>
+               <sourcefiles encoding="UTF-8">
+                  <fileset dir="${src.main}" />
+               </sourcefiles>
+            </structure>
+            <html destdir="${coverage}" footer="Type safe PHP: A compile time approach" />
+            <xml destfile="${coverage}/coverage.xml" />
+         </jacoco:report>
+      </sequential>
+   </macrodef>
+</project>
