@@ -309,10 +309,8 @@
       <mkdir dir="${target}/dist" />
       <zip destfile="${target}/dist/${distname}-bin.zip">
          <zipfileset dir="${basedir}" prefix="${distname}">
-            <include name="README" />
-         </zipfileset>
-         <zipfileset dir="${bin}" prefix="${distname}/bin">
-            <include name="*" />
+            <include name="README.md" />
+			<include name="LICENSE.txt" />
          </zipfileset>
          <zipfileset dir="${target}/lib" prefix="${distname}/lib">
             <include name="*.jar" />
