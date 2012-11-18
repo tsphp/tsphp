@@ -1,8 +1,9 @@
 Type safe PHP: A compile time approach
 =====
 Project has just started do not expect to find here the compiler (not yet).
-
 Visit the wiki for more information on the project: http://147.88.213.73
+
+
 
 Copyright 2012 Robert Stoll <rstoll@tutteli.ch>
 
