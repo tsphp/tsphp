@@ -27,7 +27,6 @@ public class DummyForJenkins
     private String name;
 
     public DummyForJenkins() {
-        name = "";
     }
 
     public DummyForJenkins(final String aName) {
