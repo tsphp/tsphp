@@ -1,7 +1,7 @@
 Type safe PHP: A compile time approach
 =====
 Project has just started do not expect to find here the compiler (not yet).
-Visit the `wiki <http://tsphp.tutteli.ch/wiki>`_ for more information on the project.
+Visit the `wiki <http://tsphp.tutteli.ch/>`_ for more information on the project.
 
 
 

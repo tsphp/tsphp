@@ -61,6 +61,8 @@
    <property name="coverage" location="${target}/coverage" />
    <property name="checkstyle" location="${target}/checkstyle" />
    <property name="pmd" location="${target}/pmd" />
+   <property name="cpd" location="${target}/cpd" />
+   <property name="findbugs" location="${target}/findbugs" />
 
    <!-- setting general properties -->
    <property name="proj.java.version" value="1.7" />
@@ -264,7 +266,34 @@
             out="${pmd}/index.html"
             style="${libdev}/pmd/style/pmd-report-per-class.xslt" />
    </target>
-
+   <!-- ================================================================== -->
+   <!-- Target: cpd -->
+   <!-- ================================================================== -->
+   <target name="cpd" depends="init" description="cpd report">
+		<taskdef name="cpd" classname="net.sourceforge.pmd.cpd.CPDTask" classpathref="libsetdev" />
+		<mkdir dir="${cpd}" />
+		<cpd minimumTokenCount="100" outputFile="${cpd}/cpd.xml" format="xml">
+			<fileset dir="${src.main}">
+				<include name="**/*.java"/>
+			</fileset>
+		</cpd>
+		<xslt in="${cpd}/cpd.xml" out="${cpd}/index.html" style="${libdev}/pmd/style/cpdhtml.xslt" />
+	</target>
+	<!-- ================================================================== -->
+	<!-- Target: findbugs -->
+	<!-- ================================================================== -->
+	<target name="findbugs" depends="jar">
+		<taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpathref="libsetdev"/>
+		<mkdir dir="${findbugs}" />
+		<findbugs home="${libdev}/findbugs"
+				  output="xml:withMessages"
+				  outputFile="${findbugs}/findbugs.xml" >
+			<sourcePath path="${src.main}" />
+			<class location="${classes}" />
+		</findbugs>
+		<xslt in="${findbugs}/findbugs.xml" out="${findbugs}/index.html" style="${libdev}/findbugs/style/fancy.xsl"/>
+	</target>
+   
    <!-- ================================================================== -->
    <!-- Target: javadoc -->
    <!-- ================================================================== -->
@@ -304,7 +333,7 @@
    <!--          werden, wenn Fehler vorhanden sind (compile, test etc.) -->
    <!-- ================================================================== -->
    <target name="dist"
-           depends="clean, report, jar, build"
+           depends="clean, report, jar,findbugs, build"
            description="create distributions">
       <mkdir dir="${target}/dist" />
       <zip destfile="${target}/dist/${distname}-bin.zip">
@@ -362,7 +391,7 @@
    <!-- Target: reports -->
    <!-- ================================================================== -->
    <target name="report"
-           depends="checkstyle,pmd,javadoc,classycle"
+           depends="checkstyle,pmd,cpd,javadoc,classycle"
            description="complete reports">
    </target>
 

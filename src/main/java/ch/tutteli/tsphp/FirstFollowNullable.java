@@ -141,7 +141,7 @@ public class FirstFollowNullable
     private boolean areAllSymbolsNullable(final String symbols) {
         boolean areAllNullable = true;
         for (int i = 0; i < symbols.length(); ++i) {
-            if (nullable.get(symbols.substring(i, i + 1)) == Boolean.FALSE) {
+            if (!nullable.get(symbols.substring(i, i + 1))) {
                 areAllNullable = false;
                 break;
             }
