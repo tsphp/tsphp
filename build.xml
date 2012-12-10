@@ -47,7 +47,6 @@
    <property name="src" location="${basedir}/src" />
    <property name="src.main" location="${src}/main/java" />
    <property name="src.test" location="${src}/test/java" />
-   <property name="src.idl" location="${src}/main/idl" />
 
    <!-- setting target locations -->
    <property name="target" location="${basedir}/build" />
@@ -288,6 +287,7 @@
 		<findbugs home="${libdev}/findbugs"
 				  output="xml:withMessages"
 				  outputFile="${findbugs}/findbugs.xml" >
+                        <auxClasspath path="${lib}" />
 			<sourcePath path="${src.main}" />
 			<class location="${classes}" />
 		</findbugs>
