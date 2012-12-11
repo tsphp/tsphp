@@ -184,7 +184,7 @@
       <mkdir dir="${junit}" />
    	  <mkdir dir="${coverage}" />
    	  <touch file="${coverage.data}" />
-      <jacoco:agent property="test.vm.param" destfile="${coverage.data}"/>
+      <jacoco:agent property="test.vm.param" destfile="${coverage.data}" excludes="**/ch/tutteli/tsphp/Main.class"/>
       <junit printsummary="off"
              haltonfailure="false"
              fork="true"
