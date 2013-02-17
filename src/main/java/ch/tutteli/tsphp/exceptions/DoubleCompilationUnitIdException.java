@@ -14,30 +14,13 @@
  * limitations under the License.
  * 
  */
-package ch.tutteli.tsphp;
+package ch.tutteli.tsphp.exceptions;
 
 /**
- * Just a dummy class to test jenkins and bitbucket.
  *
  * @author Robert Stoll <rstoll@tutteli.ch>
  */
-public class DummyForJenkins
+public class DoubleCompilationUnitIdException extends CompilerException
 {
-
-    private String name;
-
-    public DummyForJenkins() {
-    }
-
-    public DummyForJenkins(final String aName) {
-        name = aName;
-    }
-
-    public final void setName(final String aName) {
-        name = aName;
-    }
-
-    public final String getName() {
-        return name;
-    }
+    
 }

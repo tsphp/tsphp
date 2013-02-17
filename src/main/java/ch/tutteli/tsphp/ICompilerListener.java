@@ -20,17 +20,7 @@ package ch.tutteli.tsphp;
  *
  * @author Robert Stoll <rstoll@tutteli.ch>
  */
-public final class Main
+public interface ICompilerListener
 {
-
-    private Main() {
-    }
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(final String[] args) {
-        final DummyForJenkins dummy = new DummyForJenkins("Robert Stoll");
-        System.out.println("Dummy name: " + dummy.getName());
-    }
+    public void afterCompilingCompleted();
 }

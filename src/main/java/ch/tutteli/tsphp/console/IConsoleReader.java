@@ -14,22 +14,18 @@
  * limitations under the License.
  * 
  */
-package ch.tutteli.tsphp;
+package ch.tutteli.tsphp.console;
 
 /**
- * Represents a production for a nonterminal character.
  *
  * @author Robert Stoll <rstoll@tutteli.ch>
  */
-public class Production
+interface IConsoleReader
 {
 
-    public static final String EMPTY_STRING = "";
-    public final String LeftHandSide;
-    public final String RightHandSide;
+    void readArguments(String[] args);
 
-    public Production(final String aLeftHandSide, final String aRightHandSide) {
-        LeftHandSide = aLeftHandSide;
-        RightHandSide = aRightHandSide;
-    }
+    void addFile(String path);
+
+    void addDirectory(String path);
 }

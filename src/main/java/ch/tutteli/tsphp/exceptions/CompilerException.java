@@ -14,19 +14,34 @@
  * limitations under the License.
  * 
  */
-package ch.tutteli.tsphp;
+package ch.tutteli.tsphp.exceptions;
 
 /**
  *
  * @author Robert Stoll <rstoll@tutteli.ch>
  */
-public class Debug {
-    public static void main(String[] args) {
-//        ProductionsTest test = new ProductionsTest();
-//        test.testGrammar2_48CompilersPrinciplesTechniquesAndTools();
-        FirstFollowNullableTest test = new FirstFollowNullableTest();
-        test.setUp();
-        test.testGrammarWithLongRightHandSide();
-//        test.testGrammar3_12ModernCompilerImplementationInJava();
+public class CompilerException extends RuntimeException
+{
+
+    public CompilerException() {
+        super();
+    }
+
+    public CompilerException(String message) {
+        super(message);
+    }
+
+    public CompilerException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public CompilerException(Throwable cause) {
+        super(cause);
+    }
+
+    protected CompilerException(String message, Throwable cause,
+            boolean enableSuppression,
+            boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
     }
 }

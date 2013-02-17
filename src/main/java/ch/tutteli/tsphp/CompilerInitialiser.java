@@ -16,19 +16,26 @@
  */
 package ch.tutteli.tsphp;
 
-import java.util.Set;
+import ch.tutteli.tsphp.Compiler;
+import ch.tutteli.tsphp.common.TSPHPAstAdaptor;
+import ch.tutteli.tsphp.typechecker.TypeChecker;
 
 /**
- * Represents a list of productions for a grammar.
  *
  * @author Robert Stoll <rstoll@tutteli.ch>
  */
-public interface IProductions
+public class CompilerInitialiser
 {
 
-    int size();
+    public ICompiler create() {
+        return create(Runtime.getRuntime().availableProcessors() * 4);
+    }
 
-    Set<String> getTerminalSymbols();
-
-    Set<String> getNonTerminalSymbols();
+    public ICompiler create(int numberOfWorkers) {
+        return new Compiler(
+                new TypeChecker(new TSPHPAstAdaptor()),
+                new ParserFactory(new TSPHPAstAdaptor()),
+                null,
+                numberOfWorkers);
+    }
 }

@@ -16,19 +16,16 @@
  */
 package ch.tutteli.tsphp;
 
-import java.util.HashSet;
-import java.util.Set;
+import ch.tutteli.tsphp.common.IParser;
+import org.antlr.runtime.tree.TreeAdaptor;
 
 /**
  *
  * @author Robert Stoll <rstoll@tutteli.ch>
  */
-public class CollectionHelper {
-    public static <T> Set<T> arrayToSet(T[] array){
-        Set<T> set = new HashSet<>();
-        for(T t :array ){
-            set.add(t);
-        }
-        return set;
-    }
+public interface IParserFactory
+{
+    public IParser build();
+
+    public TreeAdaptor getTSPHPAstAdaptor();
 }

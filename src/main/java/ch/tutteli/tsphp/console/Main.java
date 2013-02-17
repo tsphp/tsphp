@@ -14,34 +14,25 @@
  * limitations under the License.
  * 
  */
-package ch.tutteli.tsphp;
+package ch.tutteli.tsphp.console;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import org.junit.Test;
+import ch.tutteli.tsphp.CompilerInitialiser;
 
 /**
  *
  * @author Robert Stoll <rstoll@tutteli.ch>
  */
-public class DummyForJenkinsTest {
+public final class Main
+{
 
-    @Test
-    public void testDefaultConstructor() {
-        DummyForJenkins dummy = new DummyForJenkins();
-        assertNull(dummy.getName());
+    private Main() {
     }
-    
-    @Test
-    public void testParameterisedConstructor() {
-        DummyForJenkins dummy = new DummyForJenkins("Robert");
-        assertEquals("Robert", dummy.getName());
-    }
-    
-    @Test
-    public void testSetName() {
-        DummyForJenkins dummy = new DummyForJenkins("Robert");
-        dummy.setName("Peter");
-        assertEquals("Peter", dummy.getName());
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(final String[] args) {
+        IConsoleReader consoleReader = new ConsoleReader(new CompilerInitialiser().create());
+        consoleReader.readArguments(args);
     }
 }
