@@ -54,7 +54,7 @@ public class Compiler implements ICompiler
     private final List<Exception> exceptions = new ArrayList<>();
     private boolean isCompiling = false;
     private final Object lock = new Object();
-    private Map<String, OutputStream> outputStreams = new HashMap<>();
+    private Map<String, String> translations = new HashMap<>();
 
     public Compiler(ITypeChecker aTypeChecker, IParserFactory aParserFactory,
             Collection<ITranslatorFactory> theTranslatorFactories, int aNumberOfWorkers) {
@@ -69,11 +69,6 @@ public class Compiler implements ICompiler
     @Override
     public void registerCompilerListener(ICompilerListener listener) {
         compilerListeners.add(listener);
-    }
-
-    @Override
-    public void addTranslator(ITranslator translator) {
-        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
@@ -255,7 +250,7 @@ public class Compiler implements ICompiler
                         @Override
                         public void run() {
                             try {
-                                outputStreams.put(compilationUnit.id,
+                                translations.put(compilationUnit.id,
                                         translatorFactory.build().translate(compilationUnit.compilationUnit));
                             } catch (IOException ex) {
                                 exceptions.add(ex);
@@ -275,8 +270,8 @@ public class Compiler implements ICompiler
     }
 
     @Override
-    public Map<String, OutputStream> getOutputStreams() {
-        return outputStreams;
+    public Map<String, String> getTranslations() {
+        return translations;
     }
 
     private void updateListener() {
