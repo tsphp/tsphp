@@ -50,7 +50,7 @@ public class Compiler implements ICompiler
     private Collection<ICompilerListener> compilerListeners = new ArrayDeque<>();
     private Collection<ITranslatorFactory> translatorFactories;
     //
-    private final Collection<CompilationUnitWithStreamDto> compilationUnits = new ArrayDeque<>();
+    private final Collection<CompilationUnitDto> compilationUnits = new ArrayDeque<>();
     private final List<Exception> exceptions = new ArrayList<>();
     private boolean isCompiling = false;
     private final Object lock = new Object();
@@ -228,7 +228,7 @@ public class Compiler implements ICompiler
 
     private void doReferencePhase() {
         if (!compilationUnits.isEmpty()) {
-            for (CompilationUnitWithStreamDto compilationUnit : compilationUnits) {
+            for (CompilationUnitDto compilationUnit : compilationUnits) {
                 executorService.execute(new ReferencePhaseRunner(compilationUnit));
             }
             waitUntilExecutorFinished(new Runnable()
@@ -244,14 +244,17 @@ public class Compiler implements ICompiler
     private void doTranslation() {
         if (translatorFactories != null) {
             for (final ITranslatorFactory translatorFactory : translatorFactories) {
-                for (final CompilationUnitWithStreamDto compilationUnit : compilationUnits) {
+                for (final CompilationUnitDto compilationUnit : compilationUnits) {
                     executorService.execute(new Runnable()
                     {
                         @Override
                         public void run() {
                             try {
-                                translations.put(compilationUnit.id,
-                                        translatorFactory.build().translate(compilationUnit.compilationUnit));
+                                compilationUnit.treeNodeStream.reset();
+                                ITranslator translator = translatorFactory.build();
+                                String translation = translator.translate(
+                                        compilationUnit.compilationUnit, compilationUnit.treeNodeStream);
+                                translations.put(compilationUnit.id, translation);
                             } catch (IOException ex) {
                                 exceptions.add(ex);
                             }
@@ -309,7 +312,7 @@ public class Compiler implements ICompiler
                 commonTreeNodeStream.setTokenStream(parser.getTokenStream());
 
                 typeChecker.enrichWithDefinitions(ast, commonTreeNodeStream);
-                compilationUnits.add(new CompilationUnitWithStreamDto(id, ast, commonTreeNodeStream));
+                compilationUnits.add(new CompilationUnitDto(id, ast, commonTreeNodeStream));
 
             } catch (IOException ex) {
                 exceptions.add(ex);
@@ -320,9 +323,9 @@ public class Compiler implements ICompiler
     private class ReferencePhaseRunner implements Runnable
     {
 
-        CompilationUnitWithStreamDto dto;
+        CompilationUnitDto dto;
 
-        ReferencePhaseRunner(CompilationUnitWithStreamDto aDto) {
+        ReferencePhaseRunner(CompilationUnitDto aDto) {
             dto = aDto;
         }
 
@@ -330,21 +333,6 @@ public class Compiler implements ICompiler
         public void run() {
             dto.treeNodeStream.reset();
             typeChecker.enrichWithReferences(dto.compilationUnit, dto.treeNodeStream);
-        }
-    }
-
-    private class CompilationUnitWithStreamDto
-    {
-
-        public String id;
-        public ITSPHPAst compilationUnit;
-        public CommonTreeNodeStream treeNodeStream;
-
-        public CompilationUnitWithStreamDto(String theId, ITSPHPAst theCompilationUnit,
-                CommonTreeNodeStream theTreeNodeStream) {
-            id = theId;
-            compilationUnit = theCompilationUnit;
-            treeNodeStream = theTreeNodeStream;
         }
     }
 }

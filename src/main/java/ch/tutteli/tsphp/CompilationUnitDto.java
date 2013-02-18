@@ -16,27 +16,24 @@
  */
 package ch.tutteli.tsphp;
 
-import ch.tutteli.tsphp.common.TSPHPAstAdaptor;
-import ch.tutteli.tsphp.typechecker.TypeChecker;
+import ch.tutteli.tsphp.common.ITSPHPAst;
+import org.antlr.runtime.tree.CommonTreeNodeStream;
 
 /**
  *
  * @author Robert Stoll <rstoll@tutteli.ch>
  */
-public class CompilerInitialiser
+public class CompilationUnitDto 
 {
 
-    private final int CORE_MULTIPLICATION_FACTOR = 4;
+    public String id;
+    public ITSPHPAst compilationUnit;
+    public CommonTreeNodeStream treeNodeStream;
 
-    public ICompiler create() {
-        return create(Runtime.getRuntime().availableProcessors() * CORE_MULTIPLICATION_FACTOR);
-    }
-
-    public ICompiler create(final int numberOfWorkers) {
-        return new Compiler(
-                new TypeChecker(new TSPHPAstAdaptor()),
-                new ParserFactory(new TSPHPAstAdaptor()),
-                null,
-                numberOfWorkers);
+    public CompilationUnitDto(String theId, ITSPHPAst theCompilationUnit,
+            CommonTreeNodeStream theTreeNodeStream) {
+        id = theId;
+        compilationUnit = theCompilationUnit;
+        treeNodeStream = theTreeNodeStream;
     }
 }

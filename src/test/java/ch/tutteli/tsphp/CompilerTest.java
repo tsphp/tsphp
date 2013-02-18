@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import junit.framework.Assert;
+import org.antlr.runtime.tree.TreeNodeStream;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -66,8 +67,9 @@ public class CompilerTest
     public void testBlackBoxCompiler() throws InterruptedException, IOException {
 
         ITranslator translator = Mockito.mock(ITranslator.class);
-       
-        Mockito.when(translator.translate(Mockito.any(ITSPHPAst.class))).thenReturn("tata");
+
+        Mockito.when(translator.translate(Mockito.any(ITSPHPAst.class), Mockito.any(TreeNodeStream.class)))
+                .thenReturn("tata");
 
         ITranslatorFactory factory = Mockito.mock(ITranslatorFactory.class);
         Mockito.when(factory.build()).thenReturn(translator);
