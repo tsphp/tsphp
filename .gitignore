@@ -1,12 +1,7 @@
 build/*
 nbproject/*
 
-/lib/dev/sonar
-/lib/dev/checkstyle
-/lib/dev/classycle
-/lib/dev/findbugs
-/lib/dev/jacoco
-/lib/dev/pmd
+
 /lib/dev/sonar
 /lib/dev/checkstyle
 /lib/dev/classycle
