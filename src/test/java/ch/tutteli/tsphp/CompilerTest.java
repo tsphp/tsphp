@@ -57,7 +57,7 @@ public class CompilerTest
         });
         compiler.compile();
         compiler.addCompilationUnit("test", "int $a;");
-        lock.await(2, TimeUnit.SECONDS);
+        lock.await(50, TimeUnit.SECONDS);
         Assert.assertTrue(compiler.hasFoundError());
         List<Exception> exceptions = compiler.getExceptions();
         Assert.assertEquals(1, exceptions.size());

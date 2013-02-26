@@ -251,6 +251,8 @@ public class Compiler implements ICompiler
                     doTypeChecking();
                 }
             });
+        }else{
+            updateListener();
         }
     }
 
@@ -266,6 +268,8 @@ public class Compiler implements ICompiler
                     doTranslation();
                 }
             });
+        }else{
+            updateListener();
         }
     }
 
@@ -297,6 +301,8 @@ public class Compiler implements ICompiler
                     updateListener();
                 }
             });
+        }else{
+            updateListener();
         }
     }
 
