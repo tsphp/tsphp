@@ -16,15 +16,14 @@
  */
 package ch.tutteli.tsphp;
 
-import ch.tutteli.tsphp.exceptions.CompilerException;
 import ch.tutteli.tsphp.common.IParser;
 import ch.tutteli.tsphp.common.ITSPHPAst;
 import ch.tutteli.tsphp.common.ITranslator;
 import ch.tutteli.tsphp.common.ITranslatorFactory;
 import ch.tutteli.tsphp.common.ITypeChecker;
+import ch.tutteli.tsphp.exceptions.CompilerException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -73,17 +72,31 @@ public class Compiler implements ICompiler
 
     @Override
     public boolean hasFoundError() {
+        boolean hasStartedCompiling;
+        synchronized (lock) {
+            hasStartedCompiling = isCompiling;
+        }
+        if(hasStartedCompiling){
+            throw new CompilerException("Cannot check for exceptions during compilation.");
+        }
         return !exceptions.isEmpty();
     }
 
     @Override
     public List<Exception> getExceptions() {
+        boolean hasStartedCompiling;
+        synchronized (lock) {
+            hasStartedCompiling = isCompiling;
+        }
+        if(hasStartedCompiling){
+            throw new CompilerException("Cannot retrieve the exceptions during compilation.");
+        }
         return exceptions;
     }
 
     @Override
     public void addCompilationUnit(String id, final String string) {
-        add(new ParserAndDefinitionPhaseRunner(id, new IParserMethod()
+        add(new ParseAndDefinitionPhaseRunner(id, new IParserMethod()
         {
             @Override
             public ITSPHPAst parser(IParser parser) {
@@ -92,7 +105,7 @@ public class Compiler implements ICompiler
         }));
     }
 
-    private void add(ParserAndDefinitionPhaseRunner runner) {
+    private void add(ParseAndDefinitionPhaseRunner runner) {
         boolean notYetCompiling;
         synchronized (lock) {
             notYetCompiling = !isCompiling;
@@ -106,7 +119,7 @@ public class Compiler implements ICompiler
 
     @Override
     public void addCompilationUnit(String id, final char[] chars, final int numberOfActualCharsInArray) {
-        add(new ParserAndDefinitionPhaseRunner(id, new IParserMethod()
+        add(new ParseAndDefinitionPhaseRunner(id, new IParserMethod()
         {
             @Override
             public ITSPHPAst parser(IParser parser) {
@@ -117,7 +130,7 @@ public class Compiler implements ICompiler
 
     @Override
     public void addCompilationUnit(String id, final InputStream inputStream) throws IOException {
-        add(new ParserAndDefinitionPhaseRunner(id, new IParserMethod()
+        add(new ParseAndDefinitionPhaseRunner(id, new IParserMethod()
         {
             @Override
             public ITSPHPAst parser(IParser parser) throws IOException {
@@ -128,7 +141,7 @@ public class Compiler implements ICompiler
 
     @Override
     public void addCompilationUnit(String id, final InputStream inputStream, final int size) throws IOException {
-        add(new ParserAndDefinitionPhaseRunner(id, new IParserMethod()
+        add(new ParseAndDefinitionPhaseRunner(id, new IParserMethod()
         {
             @Override
             public ITSPHPAst parser(IParser parser) throws IOException {
@@ -139,7 +152,7 @@ public class Compiler implements ICompiler
 
     @Override
     public void addCompilationUnit(String id, final InputStream inputStream, final String encoding) throws IOException {
-        add(new ParserAndDefinitionPhaseRunner(id, new IParserMethod()
+        add(new ParseAndDefinitionPhaseRunner(id, new IParserMethod()
         {
             @Override
             public ITSPHPAst parser(IParser parser) throws IOException {
@@ -151,7 +164,7 @@ public class Compiler implements ICompiler
     @Override
     public void addCompilationUnit(String id, final InputStream inputStream, final int size, final String encoding)
             throws IOException {
-        add(new ParserAndDefinitionPhaseRunner(id, new IParserMethod()
+        add(new ParseAndDefinitionPhaseRunner(id, new IParserMethod()
         {
             @Override
             public ITSPHPAst parser(IParser parser) throws IOException {
@@ -163,7 +176,7 @@ public class Compiler implements ICompiler
     @Override
     public void addCompilationUnit(String id, final InputStream inputStream, final int size, final int readBufferSize,
             final String encoding) throws IOException {
-        add(new ParserAndDefinitionPhaseRunner(id, new IParserMethod()
+        add(new ParseAndDefinitionPhaseRunner(id, new IParserMethod()
         {
             @Override
             public ITSPHPAst parser(IParser parser) throws IOException {
@@ -175,7 +188,7 @@ public class Compiler implements ICompiler
     @Override
     public void addFile(final String pathToFileInclFileName) throws IOException {
 
-        add(new ParserAndDefinitionPhaseRunner(pathToFileInclFileName, new IParserMethod()
+        add(new ParseAndDefinitionPhaseRunner(pathToFileInclFileName, new IParserMethod()
         {
             @Override
             public ITSPHPAst parser(IParser parser) throws IOException {
@@ -186,7 +199,7 @@ public class Compiler implements ICompiler
 
     @Override
     public void addFile(final String pathToFileInclFileName, final String encoding) throws IOException {
-        add(new ParserAndDefinitionPhaseRunner(pathToFileInclFileName, new IParserMethod()
+        add(new ParseAndDefinitionPhaseRunner(pathToFileInclFileName, new IParserMethod()
         {
             @Override
             public ITSPHPAst parser(IParser parser) throws IOException {
@@ -235,6 +248,21 @@ public class Compiler implements ICompiler
             {
                 @Override
                 public void run() {
+                    doTypeChecking();
+                }
+            });
+        }
+    }
+
+    private void doTypeChecking() {
+        if (!compilationUnits.isEmpty()) {
+            for (CompilationUnitDto compilationUnit : compilationUnits) {
+                executorService.execute(new TypeCheckRunner(compilationUnit));
+            }
+            waitUntilExecutorFinished(new Runnable()
+            {
+                @Override
+                public void run() {
                     doTranslation();
                 }
             });
@@ -242,7 +270,7 @@ public class Compiler implements ICompiler
     }
 
     private void doTranslation() {
-        if (translatorFactories != null) {
+        if (isNoErrorOccured() && translatorFactories != null) {
             for (final ITranslatorFactory translatorFactory : translatorFactories) {
                 for (final CompilationUnitDto compilationUnit : compilationUnits) {
                     executorService.execute(new Runnable()
@@ -278,9 +306,15 @@ public class Compiler implements ICompiler
     }
 
     private void updateListener() {
+        isCompiling = false;
+        exceptions.addAll(typeChecker.getExceptions());
         for (ICompilerListener listener : compilerListeners) {
             listener.afterCompilingCompleted();
         }
+    }
+
+    private boolean isNoErrorOccured() {
+        return exceptions.isEmpty() && !typeChecker.hasFoundError();
     }
 
     private interface IParserMethod
@@ -289,13 +323,13 @@ public class Compiler implements ICompiler
         public ITSPHPAst parser(IParser parser) throws IOException;
     }
 
-    private class ParserAndDefinitionPhaseRunner implements Runnable
+    private class ParseAndDefinitionPhaseRunner implements Runnable
     {
 
         private IParserMethod parserMethod;
         private String id;
 
-        public ParserAndDefinitionPhaseRunner(String theId, IParserMethod aParserMethod) {
+        public ParseAndDefinitionPhaseRunner(String theId, IParserMethod aParserMethod) {
             parserMethod = aParserMethod;
             id = theId;
         }
@@ -312,6 +346,7 @@ public class Compiler implements ICompiler
                 commonTreeNodeStream.setTokenStream(parser.getTokenStream());
 
                 typeChecker.enrichWithDefinitions(ast, commonTreeNodeStream);
+                exceptions.addAll(parser.getExceptions());
                 compilationUnits.add(new CompilationUnitDto(id, ast, commonTreeNodeStream));
 
             } catch (IOException ex) {
@@ -331,8 +366,22 @@ public class Compiler implements ICompiler
 
         @Override
         public void run() {
-            dto.treeNodeStream.reset();
             typeChecker.enrichWithReferences(dto.compilationUnit, dto.treeNodeStream);
+        }
+    }
+
+    private class TypeCheckRunner implements Runnable
+    {
+
+        CompilationUnitDto dto;
+
+        TypeCheckRunner(CompilationUnitDto aDto) {
+            dto = aDto;
+        }
+
+        @Override
+        public void run() {
+            typeChecker.doTypeChecking(dto.compilationUnit, dto.treeNodeStream);
         }
     }
 }
