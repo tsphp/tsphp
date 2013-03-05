@@ -50,6 +50,7 @@
     <property name="common.jar" location="${basedir}/../TSPHP-common/build/lib" />
     <property name="parser.jar" location="${basedir}/../TSPHP-parser/build/lib"/>
     <property name="typechecker.jar" location="${basedir}/../TSPHP-typechecker/build/lib"/>
+    <property name="translator.jar" location="${basedir}/../TSPHP-translators-php54/build/lib"/>
 
     <!-- setting target locations -->
     <property name="target" location="${basedir}/build" />
@@ -83,7 +84,7 @@
         </fileset>
     </path>
     
-       <!-- define path for test -->
+    <!-- define path for test -->
     <path id="test">
         <path location="${test-classes}" />
         <path location="${classes}" />
@@ -188,9 +189,18 @@
         </jar>
     </target>
     
-    <target name="copyAllComponents" depends="copyTypeChecker, copyParser, copyCommon" description="copy common, parser and typechecker to the lib folder">
+    <target name="copyAllComponents" depends="copyTranslator, copyTypeChecker, copyParser, copyCommon" description="copy common, parser and typechecker to the lib folder">
         
     </target>
+    <target name="copyTranslator" depends="" description="copy the translator jar to the lib folder">
+        <delete>
+            <fileset dir="${lib}" includes="TSPHP-translators-*.jar"/>
+        </delete>
+        <copy todir="${lib}">
+            <fileset dir="${translator.jar}" includes="TSPHP-translators-*.jar"/>
+        </copy>
+    </target>
+    
     <target name="copyTypeChecker" depends="" description="copy typechecker jar to the lib folder">
         <delete>
             <fileset dir="${lib}" includes="TSPHP-typechecker-*.jar"/>
@@ -217,6 +227,7 @@
             <fileset dir="${common.jar}" includes="TSPHP-common-*.jar"/>
         </copy>
     </target>
+    
 
     <!-- ================================================================== -->
     <!-- Target: test -->
@@ -254,7 +265,7 @@
         <fail message="JUnit tests FAILED!" if="test.failed" />
     </target>
    
-   <target name="test.single" depends="jar">
+    <target name="test.single" depends="jar">
         <fail unless="test.class">Must set property 'test.class'</fail>
         <junit fork="true" printsummary="off" > 
             <classpath refid="test"/>

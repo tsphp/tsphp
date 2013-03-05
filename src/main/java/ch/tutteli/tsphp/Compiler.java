@@ -49,9 +49,11 @@ public class Compiler implements ICompiler
     private Collection<ICompilerListener> compilerListeners = new ArrayDeque<>();
     private Collection<ITranslatorFactory> translatorFactories;
     //
-    private final Collection<CompilationUnitDto> compilationUnits = new ArrayDeque<>();
-    private final List<Exception> exceptions = new ArrayList<>();
+    private Collection<CompilationUnitDto> compilationUnits = new ArrayDeque<>();
+    private List<Exception> exceptions = new ArrayList<>();
     private boolean isCompiling = false;
+    private boolean needReset = false;
+    //
     private final Object lock = new Object();
     private Map<String, String> translations = new HashMap<>();
 
@@ -76,7 +78,7 @@ public class Compiler implements ICompiler
         synchronized (lock) {
             hasStartedCompiling = isCompiling;
         }
-        if(hasStartedCompiling){
+        if (hasStartedCompiling) {
             throw new CompilerException("Cannot check for exceptions during compilation.");
         }
         return !exceptions.isEmpty();
@@ -88,7 +90,7 @@ public class Compiler implements ICompiler
         synchronized (lock) {
             hasStartedCompiling = isCompiling;
         }
-        if(hasStartedCompiling){
+        if (hasStartedCompiling) {
             throw new CompilerException("Cannot retrieve the exceptions during compilation.");
         }
         return exceptions;
@@ -106,14 +108,15 @@ public class Compiler implements ICompiler
     }
 
     private void add(ParseAndDefinitionPhaseRunner runner) {
-        boolean notYetCompiling;
+        boolean doesNotNetReset;
         synchronized (lock) {
-            notYetCompiling = !isCompiling;
+            doesNotNetReset = !needReset;
         }
-        if (notYetCompiling) {
+        if (doesNotNetReset) {
             executorService.execute(runner);
         } else {
-            exceptions.add(new CompilerException("Tried to parse after calling compile()"));
+            throw new CompilerException("Tried to parse after calling compile(). If compilation was finished "
+                    + "and you wish to recompile, then use reset() first.");
         }
     }
 
@@ -210,12 +213,13 @@ public class Compiler implements ICompiler
 
     @Override
     public void compile() {
-        boolean isNotAlreadyCompiling;
+        boolean doesNotNeedReset;
         synchronized (lock) {
-            isNotAlreadyCompiling = !isCompiling;
+            doesNotNeedReset = !needReset;
             isCompiling = true;
+            needReset = true;
         }
-        if (isNotAlreadyCompiling) {
+        if (doesNotNeedReset) {
             waitUntilExecutorFinished(new Runnable()
             {
                 @Override
@@ -223,7 +227,24 @@ public class Compiler implements ICompiler
                     doReferencePhase();
                 }
             });
+        } else {
+            throw new CompilerException("Cannot compile during an ongoing compilation.");
         }
+    }
+
+    @Override
+    public void reset() {
+        boolean hasStartedCompiling;
+        synchronized (lock) {
+            hasStartedCompiling = isCompiling;
+        }
+        if (hasStartedCompiling) {
+            throw new CompilerException("Cannot reset during compilation.");
+        }
+        compilationUnits = new ArrayDeque<>();
+        translations = new HashMap<>();
+        exceptions = new ArrayList<>();
+        needReset = false;
     }
 
     private void waitUntilExecutorFinished(Runnable callback) {
@@ -251,7 +272,7 @@ public class Compiler implements ICompiler
                     doTypeChecking();
                 }
             });
-        }else{
+        } else {
             updateListener();
         }
     }
@@ -268,7 +289,7 @@ public class Compiler implements ICompiler
                     doTranslation();
                 }
             });
-        }else{
+        } else {
             updateListener();
         }
     }
@@ -281,15 +302,14 @@ public class Compiler implements ICompiler
                     {
                         @Override
                         public void run() {
-                            try {
-                                compilationUnit.treeNodeStream.reset();
-                                ITranslator translator = translatorFactory.build();
-                                String translation = translator.translate(
-                                        compilationUnit.compilationUnit, compilationUnit.treeNodeStream);
-                                translations.put(compilationUnit.id, translation);
-                            } catch (IOException ex) {
-                                exceptions.add(ex);
+                            compilationUnit.treeNodeStream.reset();
+                            ITranslator translator = translatorFactory.build();
+                            String translation = translator.translate(compilationUnit.treeNodeStream);
+                            translations.put(compilationUnit.id, translation);
+                            if (translator.hasFoundError()) {
+                                exceptions.addAll(translator.getExceptions());
                             }
+
                         }
                     });
                 }
@@ -301,7 +321,7 @@ public class Compiler implements ICompiler
                     updateListener();
                 }
             });
-        }else{
+        } else {
             updateListener();
         }
     }

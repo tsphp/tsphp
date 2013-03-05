@@ -17,7 +17,6 @@
 package ch.tutteli.tsphp;
 
 import ch.tutteli.tsphp.common.IErrorReporter;
-import ch.tutteli.tsphp.common.ITranslator;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
@@ -57,6 +56,8 @@ public interface ICompiler extends IErrorReporter
     void addFile(String pathToFileInclFileName, String encoding) throws IOException;
 
     void compile();
+    
+    void reset();
 
     Map<String, String> getTranslations();
 }

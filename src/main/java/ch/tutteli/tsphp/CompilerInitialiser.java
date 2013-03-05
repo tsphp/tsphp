@@ -16,8 +16,15 @@
  */
 package ch.tutteli.tsphp;
 
+import ch.tutteli.tsphp.Compiler;
+import ch.tutteli.tsphp.common.ITSPHPAstAdaptor;
+import ch.tutteli.tsphp.common.ITranslator;
+import ch.tutteli.tsphp.common.ITranslatorFactory;
 import ch.tutteli.tsphp.common.TSPHPAstAdaptor;
+import ch.tutteli.tsphp.translators.php54.PHP54TranslatorFactory;
 import ch.tutteli.tsphp.typechecker.TypeChecker;
+import java.util.ArrayDeque;
+import java.util.Collection;
 
 /**
  *
@@ -33,10 +40,14 @@ public class CompilerInitialiser
     }
 
     public ICompiler create(final int numberOfWorkers) {
+        Collection<ITranslatorFactory> translatorFactories = new ArrayDeque();
+        translatorFactories.add(new PHP54TranslatorFactory());
+        
+        ITSPHPAstAdaptor adaptor = new TSPHPAstAdaptor();
         return new Compiler(
-                new TypeChecker(new TSPHPAstAdaptor()),
-                new ParserFactory(new TSPHPAstAdaptor()),
-                null,
+                new TypeChecker(adaptor),
+                new ParserFactory(adaptor),
+                translatorFactories,
                 numberOfWorkers);
     }
 }

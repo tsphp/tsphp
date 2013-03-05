@@ -45,23 +45,54 @@ public class CompilerTest
     final CountDownLatch lock = new CountDownLatch(1);
 
     @Test
-    public void testCompilerAddInputAfterCompiling() throws InterruptedException {
+    public void testAddInputAfterCompileWithoutReset() throws InterruptedException {
 
         ICompiler compiler = new CompilerInitialiser().create();
-        compiler.registerCompilerListener(new ICompilerListener()
-        {
-            @Override
-            public void afterCompilingCompleted() {
-                lock.countDown();
-            }
-        });
         compiler.compile();
-        compiler.addCompilationUnit("test", "int $a;");
-        lock.await(50, TimeUnit.SECONDS);
-        Assert.assertTrue(compiler.hasFoundError());
-        List<Exception> exceptions = compiler.getExceptions();
-        Assert.assertEquals(1, exceptions.size());
-        Assert.assertTrue(exceptions.get(0) instanceof CompilerException);
+        try {
+            compiler.addCompilationUnit("test", "int $a;");
+            Assert.fail("No compiler exception thrown. It should not be allowed to add compilation units "
+                    + "during compilation.");
+        } catch (CompilerException ex) {
+        }
+    }
+
+    @Test
+    public void testResetDuringCompilation() throws InterruptedException {
+
+        ICompiler compiler = new CompilerInitialiser().create();
+        compiler.compile();
+        try {
+            compiler.reset();
+            Assert.fail("No compiler exception thrown. It should not be allowed to reset during compilation.");
+        } catch (CompilerException ex) {
+        }
+    }
+
+    @Test
+    public void testGetExceptionsDuringCompilation() throws InterruptedException {
+
+        ICompiler compiler = new CompilerInitialiser().create();
+        compiler.compile();
+        try {
+            compiler.getExceptions();
+            Assert.fail("No compiler exception thrown. It should not be allowed to get the exceptions during "
+                    + "compilation.");
+        } catch (CompilerException ex) {
+        }
+    }
+
+    @Test
+    public void testHasFoundErrorDuringCompilation() throws InterruptedException {
+
+        ICompiler compiler = new CompilerInitialiser().create();
+        compiler.compile();
+        try {
+            compiler.hasFoundError();
+            Assert.fail("No compiler exception thrown. It should not be allowed to test whether errors were by found"
+                    + " during compilation.");
+        } catch (CompilerException ex) {
+        }
     }
 
     @Test
@@ -69,7 +100,7 @@ public class CompilerTest
 
         ITranslator translator = Mockito.mock(ITranslator.class);
 
-        Mockito.when(translator.translate(Mockito.any(ITSPHPAst.class), Mockito.any(TreeNodeStream.class)))
+        Mockito.when(translator.translate(Mockito.any(TreeNodeStream.class)))
                 .thenReturn("tata");
 
         ITranslatorFactory factory = Mockito.mock(ITranslatorFactory.class);
