@@ -16,11 +16,15 @@
  */
 package ch.tutteli.tsphp;
 
+import ch.tutteli.tsphp.common.ICompiler;
+import ch.tutteli.tsphp.common.ICompilerListener;
+import ch.tutteli.tsphp.common.IErrorLogger;
 import ch.tutteli.tsphp.common.IParser;
 import ch.tutteli.tsphp.common.ITSPHPAst;
 import ch.tutteli.tsphp.common.ITranslator;
 import ch.tutteli.tsphp.common.ITranslatorFactory;
 import ch.tutteli.tsphp.common.ITypeChecker;
+import ch.tutteli.tsphp.common.exceptions.TSPHPException;
 import ch.tutteli.tsphp.exceptions.CompilerException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -51,6 +55,7 @@ public class Compiler implements ICompiler
     //
     private Collection<CompilationUnitDto> compilationUnits = new ArrayDeque<>();
     private List<Exception> exceptions = new ArrayList<>();
+    private Collection<IErrorLogger> errorLoggers = new ArrayDeque<>();
     private boolean isCompiling = false;
     private boolean needReset = false;
     //
@@ -82,6 +87,18 @@ public class Compiler implements ICompiler
             throw new CompilerException("Cannot check for exceptions during compilation.");
         }
         return !exceptions.isEmpty();
+    }
+
+    @Override
+    public void addErrorLogger(IErrorLogger errorLogger) {
+        errorLoggers.add(errorLogger);
+    }
+
+    @Override
+    public void log(TSPHPException exception) {
+        for (IErrorLogger logger : errorLoggers) {
+            logger.log(exception);
+        }
     }
 
     @Override

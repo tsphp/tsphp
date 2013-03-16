@@ -16,6 +16,7 @@
  */
 package ch.tutteli.tsphp;
 
+import ch.tutteli.tsphp.common.ICompiler;
 import ch.tutteli.tsphp.Compiler;
 import ch.tutteli.tsphp.common.ITSPHPAstAdaptor;
 import ch.tutteli.tsphp.common.ITranslator;

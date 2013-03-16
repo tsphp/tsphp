@@ -16,7 +16,7 @@
  */
 package ch.tutteli.tsphp.console;
 
-import ch.tutteli.tsphp.ICompiler;
+import ch.tutteli.tsphp.common.ICompiler;
 import java.io.IOException;
 
 /**

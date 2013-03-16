@@ -14,10 +14,13 @@
  * limitations under the License.
  * 
  */
-package ch.tutteli.tsphp;
+package ch.tutteli.tsphp.test;
 
 import ch.tutteli.tsphp.Compiler;
-import ch.tutteli.tsphp.common.ITSPHPAst;
+import ch.tutteli.tsphp.CompilerInitialiser;
+import ch.tutteli.tsphp.ParserFactory;
+import ch.tutteli.tsphp.common.ICompiler;
+import ch.tutteli.tsphp.common.ICompilerListener;
 import ch.tutteli.tsphp.common.ITranslator;
 import ch.tutteli.tsphp.common.ITranslatorFactory;
 import ch.tutteli.tsphp.common.TSPHPAstAdaptor;
@@ -26,7 +29,6 @@ import ch.tutteli.tsphp.typechecker.TypeChecker;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
