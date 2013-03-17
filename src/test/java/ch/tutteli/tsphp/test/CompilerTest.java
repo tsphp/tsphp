@@ -18,13 +18,16 @@ package ch.tutteli.tsphp.test;
 
 import ch.tutteli.tsphp.Compiler;
 import ch.tutteli.tsphp.CompilerInitialiser;
-import ch.tutteli.tsphp.ParserFactory;
+import ch.tutteli.tsphp.common.ACompilerListener;
 import ch.tutteli.tsphp.common.ICompiler;
-import ch.tutteli.tsphp.common.ICompilerListener;
-import ch.tutteli.tsphp.common.ITranslator;
+import ch.tutteli.tsphp.common.IParser;
+import ch.tutteli.tsphp.common.ITSPHPAstAdaptor;
 import ch.tutteli.tsphp.common.ITranslatorFactory;
+import ch.tutteli.tsphp.common.ParserUnitDto;
+import ch.tutteli.tsphp.common.TSPHPAst;
 import ch.tutteli.tsphp.common.TSPHPAstAdaptor;
 import ch.tutteli.tsphp.exceptions.CompilerException;
+import ch.tutteli.tsphp.translators.php54.PHP54TranslatorFactory;
 import ch.tutteli.tsphp.typechecker.TypeChecker;
 import java.io.IOException;
 import java.util.ArrayDeque;
@@ -33,9 +36,11 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import junit.framework.Assert;
-import org.antlr.runtime.tree.TreeNodeStream;
+import org.antlr.runtime.CommonTokenStream;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 /**
  *
@@ -44,7 +49,7 @@ import org.mockito.Mockito;
 public class CompilerTest
 {
 
-    final CountDownLatch lock = new CountDownLatch(1);
+    private CountDownLatch lock = new CountDownLatch(1);
 
     @Test
     public void testAddInputAfterCompileWithoutReset() throws InterruptedException {
@@ -62,7 +67,7 @@ public class CompilerTest
     @Test
     public void testResetDuringCompilation() throws InterruptedException {
 
-        ICompiler compiler = new CompilerInitialiser().create();
+        ICompiler compiler = getSlowCompiler();
         compiler.compile();
         try {
             compiler.reset();
@@ -72,22 +77,9 @@ public class CompilerTest
     }
 
     @Test
-    public void testGetExceptionsDuringCompilation() throws InterruptedException {
-
-        ICompiler compiler = new CompilerInitialiser().create();
-        compiler.compile();
-        try {
-            compiler.getExceptions();
-            Assert.fail("No compiler exception thrown. It should not be allowed to get the exceptions during "
-                    + "compilation.");
-        } catch (CompilerException ex) {
-        }
-    }
-
-    @Test
     public void testHasFoundErrorDuringCompilation() throws InterruptedException {
-
-        ICompiler compiler = new CompilerInitialiser().create();
+        ICompiler compiler = getSlowCompiler();
+        compiler.addCompilationUnit("test", "int $a = 1");
         compiler.compile();
         try {
             compiler.hasFoundError();
@@ -100,36 +92,69 @@ public class CompilerTest
     @Test
     public void testBlackBoxCompiler() throws InterruptedException, IOException {
 
-        ITranslator translator = Mockito.mock(ITranslator.class);
+        ICompiler compiler = getCompiler();
+        compiler.addCompilationUnit("test", "int $a;");
+        compileAndCheck(compiler, "namespace{\n    $a;\n}");
+    }
 
-        Mockito.when(translator.translate(Mockito.any(TreeNodeStream.class)))
-                .thenReturn("tata");
+    @Test
+    public void testResetAndCompile() throws InterruptedException, IOException {
 
-        ITranslatorFactory factory = Mockito.mock(ITranslatorFactory.class);
-        Mockito.when(factory.build()).thenReturn(translator);
 
-        Collection<ITranslatorFactory> translators = new ArrayDeque<>();
-        translators.add(factory);
+        ICompiler compiler = getCompiler();
+        compiler.addCompilationUnit("test", "int $a;");
+        compileAndCheck(compiler, "namespace{\n    $a;\n}");
+        compiler.reset();
+        lock = new CountDownLatch(1);
+        compiler.addCompilationUnit("test", "int $a = 1;");
+        compileAndCheck(compiler, "namespace{\n    $a = 1;\n}");
 
-        ICompiler compiler = new Compiler(
-                new TypeChecker(new TSPHPAstAdaptor()),
-                new ParserFactory(new TSPHPAstAdaptor()),
-                translators,
-                1);
-        compiler.registerCompilerListener(new ICompilerListener()
+    }
+
+    private ICompiler getCompiler() {
+        ICompiler compiler = new CompilerInitialiser().create();
+        compiler.registerCompilerListener(new ACompilerListener()
         {
             @Override
             public void afterCompilingCompleted() {
                 lock.countDown();
             }
         });
-        compiler.addCompilationUnit("test", "int $a;");
+        return compiler;
+    }
+
+    private void compileAndCheck(ICompiler compiler, String translation) throws InterruptedException {
+
         compiler.compile();
         lock.await(2, TimeUnit.SECONDS);
         Assert.assertFalse(compiler.hasFoundError());
 
         Map<String, String> translations = compiler.getTranslations();
         Assert.assertEquals(1, translations.size());
-        Assert.assertEquals("tata", translations.get("test").toString());
+        Assert.assertEquals(translation, translations.get("test").replaceAll("\r", ""));
+    }
+
+    private ICompiler getSlowCompiler() {
+        Collection<ITranslatorFactory> translatorFactories = new ArrayDeque();
+        translatorFactories.add(new PHP54TranslatorFactory());
+
+        ITSPHPAstAdaptor adaptor = new TSPHPAstAdaptor();
+        IParser spy = Mockito.mock(IParser.class);
+
+        Mockito.when(spy.parse(Mockito.anyString())).thenAnswer(new Answer<Object>()
+        {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                Thread.sleep(2000);
+                return new ParserUnitDto("bla", new TSPHPAst(), new CommonTokenStream());
+            }
+        });
+        ICompiler compiler = new Compiler(
+                adaptor,
+                spy,
+                new TypeChecker(adaptor),
+                translatorFactories,
+                1);
+        return compiler;
     }
 }

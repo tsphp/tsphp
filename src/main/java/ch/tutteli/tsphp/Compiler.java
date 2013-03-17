@@ -20,22 +20,22 @@ import ch.tutteli.tsphp.common.ICompiler;
 import ch.tutteli.tsphp.common.ICompilerListener;
 import ch.tutteli.tsphp.common.IErrorLogger;
 import ch.tutteli.tsphp.common.IParser;
-import ch.tutteli.tsphp.common.ITSPHPAst;
+import ch.tutteli.tsphp.common.ITSPHPAstAdaptor;
 import ch.tutteli.tsphp.common.ITranslator;
 import ch.tutteli.tsphp.common.ITranslatorFactory;
 import ch.tutteli.tsphp.common.ITypeChecker;
+import ch.tutteli.tsphp.common.ParserUnitDto;
 import ch.tutteli.tsphp.common.exceptions.TSPHPException;
 import ch.tutteli.tsphp.exceptions.CompilerException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import org.antlr.runtime.tree.CommonTreeNodeStream;
 
 /**
@@ -45,8 +45,9 @@ import org.antlr.runtime.tree.CommonTreeNodeStream;
 public class Compiler implements ICompiler
 {
 
+    private final ITSPHPAstAdaptor astAdaptor;
+    private IParser parser;
     private ITypeChecker typeChecker;
-    private IParserFactory parserFactory;
     private ExecutorService executorService;
     private int numberOfWorkers;
     //
@@ -54,22 +55,30 @@ public class Compiler implements ICompiler
     private Collection<ITranslatorFactory> translatorFactories;
     //
     private Collection<CompilationUnitDto> compilationUnits = new ArrayDeque<>();
-    private List<Exception> exceptions = new ArrayList<>();
     private Collection<IErrorLogger> errorLoggers = new ArrayDeque<>();
     private boolean isCompiling = false;
     private boolean needReset = false;
+    private boolean hasFoundError = false;
     //
     private final Object lock = new Object();
     private Map<String, String> translations = new HashMap<>();
+    private Collection<Future> tasks = new ArrayDeque<>();
 
-    public Compiler(ITypeChecker aTypeChecker, IParserFactory aParserFactory,
+    public Compiler(ITSPHPAstAdaptor theAdaptor, IParser theParser, ITypeChecker theTypeChecker,
             Collection<ITranslatorFactory> theTranslatorFactories, int aNumberOfWorkers) {
-
-        typeChecker = aTypeChecker;
-        parserFactory = aParserFactory;
+        astAdaptor = theAdaptor;
+        typeChecker = theTypeChecker;
+        parser = theParser;
         numberOfWorkers = aNumberOfWorkers;
         translatorFactories = theTranslatorFactories;
         executorService = Executors.newFixedThreadPool(numberOfWorkers);
+
+        init();
+    }
+
+    private void init() {
+        parser.addErrorLogger(this);
+        typeChecker.addErrorLogger(this);
     }
 
     @Override
@@ -86,7 +95,7 @@ public class Compiler implements ICompiler
         if (hasStartedCompiling) {
             throw new CompilerException("Cannot check for exceptions during compilation.");
         }
-        return !exceptions.isEmpty();
+        return hasFoundError;
     }
 
     @Override
@@ -96,21 +105,10 @@ public class Compiler implements ICompiler
 
     @Override
     public void log(TSPHPException exception) {
+        hasFoundError = true;
         for (IErrorLogger logger : errorLoggers) {
             logger.log(exception);
         }
-    }
-
-    @Override
-    public List<Exception> getExceptions() {
-        boolean hasStartedCompiling;
-        synchronized (lock) {
-            hasStartedCompiling = isCompiling;
-        }
-        if (hasStartedCompiling) {
-            throw new CompilerException("Cannot retrieve the exceptions during compilation.");
-        }
-        return exceptions;
     }
 
     @Override
@@ -118,7 +116,7 @@ public class Compiler implements ICompiler
         add(new ParseAndDefinitionPhaseRunner(id, new IParserMethod()
         {
             @Override
-            public ITSPHPAst parser(IParser parser) {
+            public ParserUnitDto parser(IParser parser) {
                 return parser.parse(string);
             }
         }));
@@ -130,7 +128,7 @@ public class Compiler implements ICompiler
             doesNotNetReset = !needReset;
         }
         if (doesNotNetReset) {
-            executorService.execute(runner);
+            tasks.add(executorService.submit(runner));
         } else {
             throw new CompilerException("Tried to parse after calling compile(). If compilation was finished "
                     + "and you wish to recompile, then use reset() first.");
@@ -142,7 +140,7 @@ public class Compiler implements ICompiler
         add(new ParseAndDefinitionPhaseRunner(id, new IParserMethod()
         {
             @Override
-            public ITSPHPAst parser(IParser parser) {
+            public ParserUnitDto parser(IParser parser) {
                 return parser.parse(chars, numberOfActualCharsInArray);
             }
         }));
@@ -153,7 +151,7 @@ public class Compiler implements ICompiler
         add(new ParseAndDefinitionPhaseRunner(id, new IParserMethod()
         {
             @Override
-            public ITSPHPAst parser(IParser parser) throws IOException {
+            public ParserUnitDto parser(IParser parser) throws IOException {
                 return parser.parseInputStream(inputStream);
             }
         }));
@@ -164,7 +162,7 @@ public class Compiler implements ICompiler
         add(new ParseAndDefinitionPhaseRunner(id, new IParserMethod()
         {
             @Override
-            public ITSPHPAst parser(IParser parser) throws IOException {
+            public ParserUnitDto parser(IParser parser) throws IOException {
                 return parser.parseInputStream(inputStream, size);
             }
         }));
@@ -175,7 +173,7 @@ public class Compiler implements ICompiler
         add(new ParseAndDefinitionPhaseRunner(id, new IParserMethod()
         {
             @Override
-            public ITSPHPAst parser(IParser parser) throws IOException {
+            public ParserUnitDto parser(IParser parser) throws IOException {
                 return parser.parseInputStream(inputStream, encoding);
             }
         }));
@@ -187,7 +185,7 @@ public class Compiler implements ICompiler
         add(new ParseAndDefinitionPhaseRunner(id, new IParserMethod()
         {
             @Override
-            public ITSPHPAst parser(IParser parser) throws IOException {
+            public ParserUnitDto parser(IParser parser) throws IOException {
                 return parser.parseInputStream(inputStream, size, encoding);
             }
         }));
@@ -199,7 +197,7 @@ public class Compiler implements ICompiler
         add(new ParseAndDefinitionPhaseRunner(id, new IParserMethod()
         {
             @Override
-            public ITSPHPAst parser(IParser parser) throws IOException {
+            public ParserUnitDto parser(IParser parser) throws IOException {
                 return parser.parseInputStream(inputStream, size, readBufferSize, encoding);
             }
         }));
@@ -211,7 +209,7 @@ public class Compiler implements ICompiler
         add(new ParseAndDefinitionPhaseRunner(pathToFileInclFileName, new IParserMethod()
         {
             @Override
-            public ITSPHPAst parser(IParser parser) throws IOException {
+            public ParserUnitDto parser(IParser parser) throws IOException {
                 return parser.parseFile(pathToFileInclFileName);
             }
         }));
@@ -222,7 +220,7 @@ public class Compiler implements ICompiler
         add(new ParseAndDefinitionPhaseRunner(pathToFileInclFileName, new IParserMethod()
         {
             @Override
-            public ITSPHPAst parser(IParser parser) throws IOException {
+            public ParserUnitDto parser(IParser parser) throws IOException {
                 return parser.parseFile(pathToFileInclFileName, encoding);
             }
         }));
@@ -250,6 +248,20 @@ public class Compiler implements ICompiler
     }
 
     @Override
+    public boolean isCompiling() {
+        synchronized (lock) {
+            return isCompiling;
+        }
+    }
+
+    @Override
+    public boolean needsAReset() {
+        synchronized (lock) {
+            return needReset;
+        }
+    }
+
+    @Override
     public void reset() {
         boolean hasStartedCompiling;
         synchronized (lock) {
@@ -258,29 +270,40 @@ public class Compiler implements ICompiler
         if (hasStartedCompiling) {
             throw new CompilerException("Cannot reset during compilation.");
         }
+        typeChecker.reset();
+        parser.reset();
         compilationUnits = new ArrayDeque<>();
         translations = new HashMap<>();
-        exceptions = new ArrayList<>();
+        hasFoundError = false;
         needReset = false;
+
     }
 
-    private void waitUntilExecutorFinished(Runnable callback) {
-        for (int i = 0; i < numberOfWorkers; ++i) {
-            executorService.execute(new Runnable()
-            {
-                @Override
-                public void run() {
-                    //do nothing just make sure added tasks before are done
+    private void waitUntilExecutorFinished(final Runnable callback) {
+        new Thread(new Runnable()
+        {
+            @Override
+            public void run() {
+                try {
+                    for (Future task : tasks) {
+                        task.get();
+                    }
+                    tasks = new ArrayDeque<>();
+                    callback.run();
+                } catch (Exception ex) {
+                    TSPHPException exception = new TSPHPException("Unexpected exception occured: " + ex.getMessage(), ex);
+                    log(exception);
                 }
-            });
-        }
-        executorService.execute(callback);
+            }
+        }).start();
+
     }
 
     private void doReferencePhase() {
+        informParsgingDefinitionCompleted();
         if (!compilationUnits.isEmpty()) {
             for (CompilationUnitDto compilationUnit : compilationUnits) {
-                executorService.execute(new ReferencePhaseRunner(compilationUnit));
+                tasks.add(executorService.submit(new ReferencePhaseRunner(compilationUnit)));
             }
             waitUntilExecutorFinished(new Runnable()
             {
@@ -290,14 +313,16 @@ public class Compiler implements ICompiler
                 }
             });
         } else {
-            updateListener();
+            log(new TSPHPException("No compilation units specified"));
+            informCompilingCompleted();
         }
     }
 
     private void doTypeChecking() {
+        informReferenceCompleted();
         if (!compilationUnits.isEmpty()) {
             for (CompilationUnitDto compilationUnit : compilationUnits) {
-                executorService.execute(new TypeCheckRunner(compilationUnit));
+                tasks.add(executorService.submit(new TypeCheckRunner(compilationUnit)));
             }
             waitUntilExecutorFinished(new Runnable()
             {
@@ -307,39 +332,34 @@ public class Compiler implements ICompiler
                 }
             });
         } else {
-            updateListener();
+            log(new TSPHPException("No compilation units specified"));
+            informCompilingCompleted();
         }
     }
 
     private void doTranslation() {
-        if (isNoErrorOccured() && translatorFactories != null) {
-            for (final ITranslatorFactory translatorFactory : translatorFactories) {
-                for (final CompilationUnitDto compilationUnit : compilationUnits) {
-                    executorService.execute(new Runnable()
-                    {
-                        @Override
-                        public void run() {
-                            compilationUnit.treeNodeStream.reset();
-                            ITranslator translator = translatorFactory.build();
-                            String translation = translator.translate(compilationUnit.treeNodeStream);
-                            translations.put(compilationUnit.id, translation);
-                            if (translator.hasFoundError()) {
-                                exceptions.addAll(translator.getExceptions());
-                            }
-
-                        }
-                    });
+        informTypeCheckingCompleted();
+        if (!hasFoundError) {
+            if (translatorFactories != null) {
+                for (final ITranslatorFactory translatorFactory : translatorFactories) {
+                    for (final CompilationUnitDto compilationUnit : compilationUnits) {
+                        tasks.add(executorService.submit(new TranslatorRunner(translatorFactory, compilationUnit)));
+                    }
                 }
+                waitUntilExecutorFinished(new Runnable()
+                {
+                    @Override
+                    public void run() {
+                        informCompilingCompleted();
+                    }
+                });
+            } else {
+                log(new TSPHPException("No translator factories specified"));
+                informCompilingCompleted();
             }
-            waitUntilExecutorFinished(new Runnable()
-            {
-                @Override
-                public void run() {
-                    updateListener();
-                }
-            });
         } else {
-            updateListener();
+            log(new TSPHPException("Translation aborted due to occured errors"));
+            informCompilingCompleted();
         }
     }
 
@@ -348,22 +368,35 @@ public class Compiler implements ICompiler
         return translations;
     }
 
-    private void updateListener() {
+    private void informParsgingDefinitionCompleted() {
+        for (ICompilerListener listener : compilerListeners) {
+            listener.afterParsingAndDefinitionPhaseCompleted();
+        }
+    }
+
+    private void informReferenceCompleted() {
+        for (ICompilerListener listener : compilerListeners) {
+            listener.afterReferencePhaseCompleted();
+        }
+    }
+
+    private void informTypeCheckingCompleted() {
+        for (ICompilerListener listener : compilerListeners) {
+            listener.afterTypecheckingCompleted();
+        }
+    }
+
+    private void informCompilingCompleted() {
         isCompiling = false;
-        exceptions.addAll(typeChecker.getExceptions());
         for (ICompilerListener listener : compilerListeners) {
             listener.afterCompilingCompleted();
         }
     }
 
-    private boolean isNoErrorOccured() {
-        return exceptions.isEmpty() && !typeChecker.hasFoundError();
-    }
-
     private interface IParserMethod
     {
 
-        public ITSPHPAst parser(IParser parser) throws IOException;
+        public ParserUnitDto parser(IParser parser) throws IOException;
     }
 
     private class ParseAndDefinitionPhaseRunner implements Runnable
@@ -380,20 +413,17 @@ public class Compiler implements ICompiler
         @Override
         public void run() {
             try {
-                IParser parser = parserFactory.build();
-                ITSPHPAst ast = parserMethod.parser(parser);
-                exceptions.addAll(parser.getExceptions());
-
+                ParserUnitDto parserUnit = parserMethod.parser(parser);
                 CommonTreeNodeStream commonTreeNodeStream = new CommonTreeNodeStream(
-                        parserFactory.getTSPHPAstAdaptor(), ast);
-                commonTreeNodeStream.setTokenStream(parser.getTokenStream());
+                        astAdaptor, parserUnit.compilationUnit);
+                commonTreeNodeStream.setTokenStream(parserUnit.tokenStream);
 
-                typeChecker.enrichWithDefinitions(ast, commonTreeNodeStream);
-                exceptions.addAll(parser.getExceptions());
-                compilationUnits.add(new CompilationUnitDto(id, ast, commonTreeNodeStream));
+                typeChecker.enrichWithDefinitions(parserUnit.compilationUnit, commonTreeNodeStream);
+                compilationUnits.add(new CompilationUnitDto(id, parserUnit.compilationUnit, commonTreeNodeStream));
 
-            } catch (IOException ex) {
-                exceptions.add(ex);
+            } catch (Exception ex) {
+                TSPHPException exception = new TSPHPException("Unexpected exception occured: " + ex.getMessage(), ex);
+                log(exception);
             }
         }
     }
@@ -401,7 +431,7 @@ public class Compiler implements ICompiler
     private class ReferencePhaseRunner implements Runnable
     {
 
-        CompilationUnitDto dto;
+        private CompilationUnitDto dto;
 
         ReferencePhaseRunner(CompilationUnitDto aDto) {
             dto = aDto;
@@ -409,14 +439,19 @@ public class Compiler implements ICompiler
 
         @Override
         public void run() {
-            typeChecker.enrichWithReferences(dto.compilationUnit, dto.treeNodeStream);
+            try {
+                typeChecker.enrichWithReferences(dto.compilationUnit, dto.treeNodeStream);
+            } catch (Exception ex) {
+                TSPHPException exception = new TSPHPException("Unexpected exception occured: " + ex.getMessage(), ex);
+                log(exception);
+            }
         }
     }
 
     private class TypeCheckRunner implements Runnable
     {
 
-        CompilationUnitDto dto;
+        private CompilationUnitDto dto;
 
         TypeCheckRunner(CompilationUnitDto aDto) {
             dto = aDto;
@@ -424,7 +459,38 @@ public class Compiler implements ICompiler
 
         @Override
         public void run() {
-            typeChecker.doTypeChecking(dto.compilationUnit, dto.treeNodeStream);
+            try {
+                typeChecker.doTypeChecking(dto.compilationUnit, dto.treeNodeStream);
+            } catch (Exception ex) {
+                TSPHPException exception = new TSPHPException("Unexpected exception occured: " + ex.getMessage(), ex);
+                log(exception);
+            }
+        }
+    }
+
+    private class TranslatorRunner implements Runnable
+    {
+
+        private final CompilationUnitDto dto;
+        private final ITranslatorFactory translatorFactory;
+
+        public TranslatorRunner(ITranslatorFactory theTranslatorFactory, CompilationUnitDto compilationUnit) {
+            translatorFactory = theTranslatorFactory;
+            dto = compilationUnit;
+        }
+
+        @Override
+        public void run() {
+            try {
+                dto.treeNodeStream.reset();
+                ITranslator translator = translatorFactory.build();
+                translator.addErrorLogger(Compiler.this);
+                String translation = translator.translate(dto.treeNodeStream);
+                translations.put(dto.id, translation);
+            } catch (Exception ex) {
+                TSPHPException exception = new TSPHPException("Unexpected exception occured: " + ex.getMessage(), ex);
+                log(exception);
+            }
         }
     }
 }

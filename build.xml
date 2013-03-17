@@ -156,6 +156,11 @@
                 <include name="**/*.xml" />
             </fileset>
         </copy>
+        <copy todir="${test-classes}">
+            <fileset dir="${src.test}">
+                <include name="**/*.png" />
+            </fileset>
+        </copy>
         <javac srcdir="${src.test}"
                destdir="${test-classes}"
                source="${proj.java.version}"
@@ -449,6 +454,18 @@
             <classpath>
                 <path location="${target}/lib/${distname}.jar" />
                 <path refid="libset" />
+            </classpath>
+        </java>
+    </target>
+    
+    <target name="run.single" depends="jar">
+        <fail unless="run.class">Must set property 'run.class'</fail>
+        <java classname="${run.class}" failonerror="true" fork="true">
+            <classpath>
+                <path location="${test-classes}" />
+                <path location="${classes}" />
+                <path refid="libset" />
+                <path refid="libsetdev" />
             </classpath>
         </java>
     </target>
