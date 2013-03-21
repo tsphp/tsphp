@@ -33,7 +33,7 @@ import java.util.Collection;
 public class CompilerInitialiser
 {
 
-    private final int CORE_MULTIPLICATION_FACTOR = 4;
+    private static final int CORE_MULTIPLICATION_FACTOR = 4;
 
     public ICompiler create() {
         return create(Runtime.getRuntime().availableProcessors() * CORE_MULTIPLICATION_FACTOR);

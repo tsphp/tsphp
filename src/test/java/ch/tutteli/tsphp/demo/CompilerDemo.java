@@ -47,7 +47,9 @@ public class CompilerDemo extends javax.swing.JFrame implements ICompilerListene
     public CompilerDemo() {
         initComponents();
         this.setExtendedState(this.getExtendedState() | JFrame.MAXIMIZED_BOTH);
-
+        String path = "./build/classes-test/ch/tutteli/tsphp/demo/tsphp.png";
+        setIconImage(new ImageIcon(path).getImage());
+        
         TextLineNumber tln = new TextLineNumber(txtTSPHP);
         scrollTSPHP.setRowHeaderView(tln);
 
@@ -210,30 +212,31 @@ public class CompilerDemo extends javax.swing.JFrame implements ICompilerListene
 
     @Override
     public void afterParsingAndDefinitionPhaseCompleted() {
-        txtOutput.append("Parsing and Definition phase completed\n"
-                + "--------------------------------------\n\n");
+        txtOutput.append("--------------------------------------\n"
+                + "Parsing and Definition phase completed\n"
+                + "--------------------------------------\n");
         txtOutput.setCaretPosition(txtOutput.getDocument().getLength());
     }
 
     @Override
     public void afterReferencePhaseCompleted() {
         txtOutput.append(
-                "Reference phase completed\n"
-                + "--------------------------------------\n\n");
+                "\nReference phase completed\n"
+                + "--------------------------------------\n");
         txtOutput.setCaretPosition(txtOutput.getDocument().getLength());
     }
 
     @Override
     public void afterTypecheckingCompleted() {
         txtOutput.append(
-                "Type checking completed\n"
-                + "--------------------------------------\n\n");
+                "\nType checking completed\n"
+                + "--------------------------------------\n");
         txtOutput.setCaretPosition(txtOutput.getDocument().getLength());
     }
 
     @Override
     public void afterCompilingCompleted() {
-        txtOutput.append("Compilation completed\n");
+        txtOutput.append("\nCompilation completed\n");
         Map<String, String> translations = compiler.getTranslations();
         txtPHP.setText(translations.get("demo"));
         txtOutput.setCaretPosition(txtOutput.getDocument().getLength());
