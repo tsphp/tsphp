@@ -74,7 +74,7 @@
     <property name="distname" value="${proj.name}-${proj.version}" />
     <property name="coverage.data" value="${coverage}/jacoco.exec" />
     <property name="checkstyle.config" value="${libdev}/checkstyle/cfg" />
-    <property name="pmd.config.file" value="${libdev}/pmd/cfg/pmd_hslu.xml" />
+    <property name="pmd.config" value="${libdev}/pmd/cfg" />
 
     <!-- define runtime libraries -->
     <path id="libset">
@@ -342,7 +342,14 @@
                  classname="net.sourceforge.pmd.ant.PMDTask"
                  classpathref="libsetdev" />
         <mkdir dir="${pmd}" />
-        <pmd rulesetfiles="${pmd.config.file}">
+        <delete file="${pmd.config}/pmd_tsphp.xml"/>
+        <copy file="${pmd.config}/pmd_tsphp.xml.tpl" tofile="${pmd.config}/pmd_tsphp.xml">
+            <filterset>
+                <filter token="DIR" value="${pmd.config}"/>
+            </filterset>
+        </copy>
+        <replace file="${pmd.config}/pmd_tsphp.xml" token="\" value="/"/>
+        <pmd rulesetfiles="${pmd.config}/pmd_tsphp.xml">
             <formatter type="xml"
                        toFile="${pmd}/pmd.xml"
                        linkPrefix="../java2html/" />

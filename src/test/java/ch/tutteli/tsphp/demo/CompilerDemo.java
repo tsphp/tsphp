@@ -16,7 +16,6 @@
  */
 package ch.tutteli.tsphp.demo;
 
-import org.antlr.runtime.NoViableAltException;
 import ch.tutteli.tsphp.CompilerInitialiser;
 import ch.tutteli.tsphp.common.ICompiler;
 import ch.tutteli.tsphp.common.ICompilerListener;
@@ -25,7 +24,6 @@ import ch.tutteli.tsphp.common.exceptions.TSPHPException;
 import java.awt.event.KeyEvent;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.net.URL;
 import java.util.Map;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;

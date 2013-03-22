@@ -45,7 +45,7 @@ too much.  Try to reduce the method size by creating helper methods and removing
    </description>
      <priority>3</priority>
    <properties>
-    <property name="minimum" description="The method size reporting threshold" value="100"/>
+    <property name="minimum" description="The method size reporting threshold" value="50"/>
    </properties>
    <example>
 <![CDATA[
@@ -73,7 +73,7 @@ Long parameter lists can indicate that a new object should be created to
    </description>
      <priority>3</priority>
    <properties>
-    <property name="minimum" description="The parameter count reporting threshold" value="10"/>
+    <property name="minimum" description="The parameter count reporting threshold" value="6"/>
    </properties>
    <example>
 <![CDATA[
@@ -102,7 +102,7 @@ manageable.
    </description>
      <priority>3</priority>
        <properties>
-        <property name="minimum" description="The class size reporting threshold"  value="1000"/>
+        <property name="minimum" description="The class size reporting threshold"  value="1500"/>
        </properties>
    <example>
 <![CDATA[
@@ -249,7 +249,7 @@ lines of code that are split are counted as one.
     </description>
     <priority>3</priority>
     <properties>
-        <property name="minimum" description="The method NCSS count reporting threshold" value="100"/>
+        <property name="minimum" description="The method NCSS count reporting threshold" value="50"/>
     </properties>
    <example>
 <![CDATA[
@@ -280,7 +280,7 @@ lines of code that are split are counted as one.
     </description>
     <priority>3</priority>
     <properties>
-        <property name="minimum" description="The type NCSS count reporting threshold" value="1500"/>
+        <property name="minimum" description="The type NCSS count reporting threshold" value="1000"/>
     </properties>
    <example>
 <![CDATA[

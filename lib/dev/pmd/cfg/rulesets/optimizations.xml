@@ -17,7 +17,7 @@ These rules deal with different optimizations that generally apply to performanc
       <description>
 A local variable assigned only once can be declared final.
       </description>
-        <priority>3</priority>
+        <priority>5</priority>
       <example>
   <![CDATA[
 public class Bar {
@@ -38,7 +38,7 @@ public class Bar {
       <description>
 A method argument that is never assigned can be declared final.
       </description>
-        <priority>3</priority>
+        <priority>5</priority>
       <example>
   <![CDATA[
 public void foo (String param) {

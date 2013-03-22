@@ -26,6 +26,7 @@ Detects when a field, local, or parameter has a very short name.
 //VariableDeclaratorId[string-length(@Image) < 3]
  [not(ancestor::ForInit)]
  [not((ancestor::FormalParameter) and (ancestor::TryStatement))]
+ [not(@Image = 'id')]
                   ]]>
               </value>
           </property>
@@ -55,7 +56,7 @@ Detects when a field, formal or local variable is declared with a long name.
     </description>
       <priority>3</priority>
       <properties>
-          <property name="minimum" description="The variable length reporting threshold" value="17"/>
+          <property name="minimum" description="The variable length reporting threshold" value="30"/>
           <property name="xpath" pluginname="true">
               <value>
                   <![CDATA[
@@ -138,7 +139,7 @@ public class Foo {
 
     <rule name="MethodNamingConventions"
     			  since="1.2"
-              message="Method name does not begin with a lower case character."
+              message="Method name does begin with a lower case character."
               class="net.sourceforge.pmd.rules.MethodNamingConventions"
           externalInfoUrl="http://pmd.sourceforge.net/rules/naming.html#MethodNamingConventions">
           <description>
@@ -173,11 +174,11 @@ public class Foo {}
 
     <rule name="AbstractNaming"
     		 since="1.4"
-          message="Abstract classes should be named 'AbstractXXX'"
+          message="Abstract classes should be named 'AXXX'"
           class="net.sourceforge.pmd.rules.XPathRule"
           externalInfoUrl="http://pmd.sourceforge.net/rules/naming.html#AbstractNaming">
        <description>
-Abstract classes should be named 'AbstractXXX'.
+Abstract classes should be named 'AXXX'.
        </description>
         <priority>3</priority>
         <properties>
@@ -186,19 +187,48 @@ Abstract classes should be named 'AbstractXXX'.
                     <![CDATA[
 //ClassOrInterfaceDeclaration
  [@Abstract='true' and @Interface='false']
- [not (starts-with(@Image,'Abstract'))]
+ [not (starts-with(@Image,'A'))]
                     ]]>
                 </value>
             </property>
         </properties>
        <example>
 <![CDATA[
-public abstract class Foo { // should be AbstractFoo
+public abstract class Foo { // should be AFoo
 }
 ]]>
        </example>
     </rule>
 
+	    <rule name="InterfaceNaming"
+    		 since="1.4"
+          message="Interfaces should be named 'IXXX'"
+          class="net.sourceforge.pmd.rules.XPathRule"
+          externalInfoUrl="http://pmd.sourceforge.net/rules/naming.html">
+       <description>
+Interfaces should be named 'IXXX'.
+       </description>
+        <priority>3</priority>
+        <properties>
+            <property name="xpath">
+                <value>
+                    <![CDATA[
+//ClassOrInterfaceDeclaration
+ [@Abstract='true' and @Interface='true']
+ [not (starts-with(@Image,'I'))]
+                    ]]>
+                </value>
+            </property>
+        </properties>
+       <example>
+<![CDATA[
+public interface class Foo { // should be IFoo
+}
+]]>
+       </example>
+    </rule>
+
+	
     <rule name="AvoidDollarSigns"
     		  since="1.5"
            message="Avoid using dollar signs in variable/method/class/interface names"
