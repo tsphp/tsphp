@@ -300,7 +300,16 @@
     <target name="checkstyle" depends="init" description="checkstyle report">
         <taskdef resource="checkstyletask.properties" classpathref="libsetdev" />
         <mkdir dir="${checkstyle}" />
-        <checkstyle config="${checkstyle.config.file}" failonviolation="false">
+        <delete>
+            <fileset dir="${checkstyle.config}" includes="checkstyle.properties"/>
+        </delete> 
+        <copy file="${checkstyle.config}/checkstyle.properties.tpl" tofile="${checkstyle.config}/checkstyle.properties">
+            <filterset>
+                <filter token="DIR" value="${checkstyle.config}"/>
+            </filterset>
+        </copy>
+        <replace file="${checkstyle.config}/checkstyle.properties" token="\" value="/"/>
+        <checkstyle config="${checkstyle.config}/tsphp_checks.xml" properties="${checkstyle.config}/checkstyle.properties" failonviolation="false">
             <fileset dir="${src.main}" includes="**/*.java" excludes="**/Main.java" />
             <formatter type="xml" toFile="${checkstyle}/checkstyle.xml" />
         </checkstyle>
