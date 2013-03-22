@@ -18,7 +18,7 @@ package ch.tutteli.tsphp.test;
 
 import ch.tutteli.tsphp.Compiler;
 import ch.tutteli.tsphp.CompilerInitialiser;
-import ch.tutteli.tsphp.common.ACompilerListener;
+import ch.tutteli.tsphp.common.CompilerListener;
 import ch.tutteli.tsphp.common.ICompiler;
 import ch.tutteli.tsphp.common.IParser;
 import ch.tutteli.tsphp.common.ITSPHPAstAdaptor;
@@ -113,7 +113,7 @@ public class CompilerTest
 
     private ICompiler getCompiler() {
         ICompiler compiler = new CompilerInitialiser().create();
-        compiler.registerCompilerListener(new ACompilerListener()
+        compiler.registerCompilerListener(new CompilerListener()
         {
             @Override
             public void afterCompilingCompleted() {

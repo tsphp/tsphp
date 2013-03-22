@@ -206,7 +206,6 @@ Following adoptions are apliead to the original file from checkstyle:
 		<module name="BooleanExpressionComplexity"/>
         <module name="SimplifyBooleanExpression"/>
         <module name="SimplifyBooleanReturn"/>
-		<module name="EqualsAvoidNull"/>
 		<module name="StringLiteralEquality"/>
 		
 		 <!-- Checks for nesting level -->
@@ -252,16 +251,18 @@ Following adoptions are apliead to the original file from checkstyle:
 			<property name="severity" value="info"/>
 		</module>
         <module name="UpperEll"/>
+		
+		<module name="FileContentsHolder"/>
 
     </module>
+	<module name="SuppressionCommentFilter">
+		<property name="offCommentFormat" value="CHECKSTYLE\:OFF\: ([\w\|]+)"/>
+		<property name="onCommentFormat" value="CHECKSTYLE\:ON\: ([\w\|]+)"/>
+		<property name="checkFormat" value="$1"/>
+	</module>
 	
 	<module name="SuppressionFilter">
 		<property name="file" value="${suppressions.xml}"/>
 	</module>
-	<module name="SuppressWithNearbyCommentFilter">
-		<property name="commentFormat" value="CHECKSTYLE IGNORE (\w+) FOR NEXT (\d+) LINES"/>
-		<property name="checkFormat" value="$1"/>
-		<property name="influenceFormat" value="$2"/>
-	</module>
-
+	
 </module>

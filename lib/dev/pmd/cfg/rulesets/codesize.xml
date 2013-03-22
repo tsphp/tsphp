@@ -344,7 +344,7 @@ order to reduce its complexity and find a way to have more fine grained objects.
         </description>
         <priority>3</priority>
         <properties>
-                <property name="maxmethods"  description="The method count reporting threshold " value="10"/>
+                <property name="maxmethods"  description="The method count reporting threshold " value="15"/>
                 <property name="xpath">
                 <value>
                     <!--  FIXME: Refine XPath to discard 'get' and 'set' methods with Block no more than 3 lines,
@@ -380,6 +380,7 @@ order to reduce its complexity and find a way to have more fine grained objects.
                         )
                         ]) > $maxmethods
                     ]
+					[not(ends-with(@Image, 'Facade'))]
                     ]]>
                 </value>
             </property>

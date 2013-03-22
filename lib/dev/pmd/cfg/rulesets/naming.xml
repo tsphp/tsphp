@@ -26,7 +26,8 @@ Detects when a field, local, or parameter has a very short name.
 //VariableDeclaratorId[string-length(@Image) < 3]
  [not(ancestor::ForInit)]
  [not((ancestor::FormalParameter) and (ancestor::TryStatement))]
- [not(@Image = 'id')]
+ [not (starts-with(@Image, 'id'))]
+ [not (starts-with(@Image, 'ex'))]
                   ]]>
               </value>
           </property>
@@ -541,7 +542,7 @@ public boolean isFoo(); // ok
 public boolean getFoo(boolean bar); // ok, unless checkParameterizedMethods=true
      ]]></example>
     </rule>
-
+<!-- TSPHP has naming convetion TPascalCase for type parameters. Covered by checkstyle anyway
    <rule name="GenericsNaming"
          since="4.2.6"
          message="Generics names should be a one letter long and upper case."
@@ -590,5 +591,5 @@ public interface GenericDao<EF extends BaseModel, K extends Serializable>
 
      ]]></example>
     </rule>
-
+-->
 </ruleset>
