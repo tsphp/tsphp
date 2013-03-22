@@ -73,8 +73,7 @@
     <!-- calculated properties -->
     <property name="distname" value="${proj.name}-${proj.version}" />
     <property name="coverage.data" value="${coverage}/jacoco.exec" />
-    <property name="checkstyle.config.file"
-              value="${libdev}/checkstyle/cfg/tsphp_checks.xml" />
+    <property name="checkstyle.config" value="${libdev}/checkstyle/cfg" />
     <property name="pmd.config.file" value="${libdev}/pmd/cfg/pmd_hslu.xml" />
 
     <!-- define runtime libraries -->
