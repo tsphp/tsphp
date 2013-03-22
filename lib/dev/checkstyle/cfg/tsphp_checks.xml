@@ -85,29 +85,29 @@ Following adoptions are apliead to the original file from checkstyle:
         <!-- Checks for Javadoc comments.                     -->
         <!-- See http://checkstyle.sf.net/config_javadoc.html -->
         <!-- <module name="JavadocMethod"/> -->
-        <module name="JavadocType"/> 
+        <module name="JavadocType">
+			<property name="severity" value="warning"/>
+		</module> 
         <!-- <module name="JavadocVariable"/> -->
-        <module name="JavadocStyle"/>
-
+        <module name="JavadocStyle">
+			<property name="severity" value="warning"/>
+		</module> 
 
         <!-- Checks for Naming Conventions.                  -->
         <!-- See http://checkstyle.sf.net/config_naming.html -->
         <module name="ConstantName"/>
         <module name="LocalFinalVariableName"/>
-        <module name="LocalVariableName"/>
-       <module name="MemberName">
-		  <property name="format" value="^[A-Z][a-zA-Z0-9]*$"/>
-		  <property name="applyToProtected" value="false"/>
-		  <property name="applyToPackage" value="false"/>
-		  <property name="applyToPrivate" value="false"/>
+        <module name="LocalVariableName">
+		  <property name="format" value="^(([a-z][a-zA-Z0-9]*)|(\$this))$" />
 		</module>
 		<module name="MemberName">
-		  <property name="format" value="^[a-z][a-zA-Z0-9]*$" />
-		  <property name="applyToPublic" value="false"/>
+		  <property name="format" value="^(([a-z][a-zA-Z0-9]*)|(\$this))$" />
 		</module>
         <module name="MethodName"/>
         <module name="PackageName"/>
-        <module name="ParameterName"/>
+        <module name="ParameterName">
+		  <property name="format" value="^(([a-z][a-zA-Z0-9]*)|(\$this))$" />
+		</module>
         <module name="StaticVariableName"/>
         <module name="TypeName">
 			<property name="format" value="^I[A-Z][a-zA-Z0-9]*$"/>
@@ -141,6 +141,7 @@ Following adoptions are apliead to the original file from checkstyle:
 		</module>
         <module name="ParameterNumber">
 			<property name="max" value="4"/>
+			<property name="severity" value="warning"/>
 		</module>
 		<module name="OuterTypeNumber"/>
 
@@ -186,35 +187,81 @@ Following adoptions are apliead to the original file from checkstyle:
         <!-- <module name="AvoidInlineConditionals"/> -->
         <module name="DoubleCheckedLocking"/>    <!-- MY FAVOURITE -->
         <module name="EmptyStatement"/>
+		<module name="EmptyBlock">
+			<property name="severity" value="info"/>
+		</module>
         <module name="EqualsHashCode"/>
         <module name="HiddenField"/>
         <module name="IllegalInstantiation"/>
         <module name="InnerAssignment"/>
         <module name="MagicNumber"/>
         <module name="MissingSwitchDefault"/>
+		<module name="DefaultComesLast">
+			<property name="severity" value="info"/>
+		</module>
+		<module name="FallThrough">
+			<property name="severity" value="warning"/>
+		</module>
         <module name="RedundantThrows"/>
+		<module name="BooleanExpressionComplexity"/>
         <module name="SimplifyBooleanExpression"/>
         <module name="SimplifyBooleanReturn"/>
+		<module name="EqualsAvoidNull"/>
+		<module name="StringLiteralEquality"/>
+		
+		 <!-- Checks for nesting level -->
+		<module name="AvoidNestedBlocks">
+			<property name="severity" value="warning"/>
+		</module>
+		<module name="NestedForDepth">
+			<property name="max" value="2"/>
+			<property name="severity" value="warning"/>
+		</module>
+		<module name="NestedIfDepth">
+			<property name="max" value="2"/>
+			<property name="severity" value="warning"/>
+		</module>
+		<module name="NestedTryDepth">
+			<property name="max" value="2"/>
+			<property name="severity" value="warning"/>
+		</module>
+		
+		
 
         <!-- Checks for class design                         -->
         <!-- See http://checkstyle.sf.net/config_design.html -->
-        <module name="DesignForExtension"/>
-        <module name="FinalClass"/>
+        <!-- <module name="DesignForExtension"/> -->
+        <module name="FinalClass">
+			<property name="severity" value="info"/>
+		</module>		
         <module name="HideUtilityClassConstructor"/>
         <module name="InterfaceIsType"/>
-        <module name="VisibilityModifier"/>
+        <module name="VisibilityModifier">
+			 <property name="protectedAllowed" value="true"/>
+		</module>
+		<module name="DeclarationOrder"/>
 		<module name="InnerTypeLast"/>
 
 
         <!-- Miscellaneous other checks.                   -->
         <!-- See http://checkstyle.sf.net/config_misc.html -->
         <module name="ArrayTypeStyle"/>
-        <module name="FinalParameters"/>
+         <!-- <module name="FinalParameters"/> -->
         <module name="TodoComment">
 			<property name="format" value="TODO|FIXME|XXX"/>
+			<property name="severity" value="info"/>
 		</module>
         <module name="UpperEll"/>
 
     </module>
+	
+	<module name="SuppressionFilter">
+		<property name="file" value="${suppressions.xml}"/>
+	</module>
+	<module name="SuppressWithNearbyCommentFilter">
+		<property name="commentFormat" value="CHECKSTYLE IGNORE (\w+) FOR NEXT (\d+) LINES"/>
+		<property name="checkFormat" value="$1"/>
+		<property name="influenceFormat" value="$2"/>
+	</module>
 
 </module>
