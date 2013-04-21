@@ -24,6 +24,8 @@ import ch.tutteli.tsphp.common.exceptions.TSPHPException;
 import java.awt.event.KeyEvent;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.Map;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -47,7 +49,7 @@ public class CompilerDemo extends javax.swing.JFrame implements ICompilerListene
         this.setExtendedState(this.getExtendedState() | JFrame.MAXIMIZED_BOTH);
         String path = "./build/classes-test/ch/tutteli/tsphp/demo/tsphp.png";
         setIconImage(new ImageIcon(path).getImage());
-        
+
         TextLineNumber tln = new TextLineNumber(txtTSPHP);
         scrollTSPHP.setRowHeaderView(tln);
 
@@ -210,31 +212,34 @@ public class CompilerDemo extends javax.swing.JFrame implements ICompilerListene
 
     @Override
     public void afterParsingAndDefinitionPhaseCompleted() {
-        txtOutput.append("--------------------------------------\n"
-                + "Parsing and Definition phase completed\n"
-                + "--------------------------------------\n");
+        DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM);
+        txtOutput.append(dateFormat.format(new Date()) + ": Parsing and Definition phase completed\n"
+                + "----------------------------------------------------------------------\n");
         txtOutput.setCaretPosition(txtOutput.getDocument().getLength());
     }
 
     @Override
     public void afterReferencePhaseCompleted() {
+        DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM);
         txtOutput.append(
-                "\nReference phase completed\n"
-                + "--------------------------------------\n");
+                "\n" + dateFormat.format(new Date()) + ": Reference phase completed\n"
+                + "----------------------------------------------------------------------\n");
         txtOutput.setCaretPosition(txtOutput.getDocument().getLength());
     }
 
     @Override
     public void afterTypecheckingCompleted() {
+        DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM);
         txtOutput.append(
-                "\nType checking completed\n"
-                + "--------------------------------------\n");
+                "\n" + dateFormat.format(new Date()) + ": Type checking completed\n"
+                + "----------------------------------------------------------------------\n");
         txtOutput.setCaretPosition(txtOutput.getDocument().getLength());
     }
 
     @Override
     public void afterCompilingCompleted() {
-        txtOutput.append("\nCompilation completed\n");
+        DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM);
+        txtOutput.append("\n" + dateFormat.format(new Date()) + ": Compilation completed\n");
         Map<String, String> translations = compiler.getTranslations();
         txtPHP.setText(translations.get("demo"));
         txtOutput.setCaretPosition(txtOutput.getDocument().getLength());
@@ -242,7 +247,8 @@ public class CompilerDemo extends javax.swing.JFrame implements ICompilerListene
 
     @Override
     public void log(TSPHPException exception) {
-        txtOutput.append(exception.getMessage() + "\n");
+        DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM);
+        txtOutput.append(dateFormat.format(new Date()) + ": " + exception.getMessage() + "\n");
         Throwable throwable = exception.getCause();
         if (throwable != null && !(throwable instanceof RecognitionException)) {
             StringWriter stringWriter = new StringWriter();
