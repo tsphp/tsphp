@@ -49,7 +49,7 @@ public class HardCodedCompilerInitialiser implements ICompilerInitialiser
         return new Compiler(
                 adaptor,
                 new ParserFacade(adaptor),
-                new TypeChecker(adaptor),
+                new TypeChecker(),
                 translatorFactories,
                 numberOfWorkers);
     }

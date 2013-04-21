@@ -152,7 +152,7 @@ public class CompilerTest
         ICompiler compiler = new Compiler(
                 adaptor,
                 spy,
-                new TypeChecker(adaptor),
+                new TypeChecker(),
                 translatorFactories,
                 1);
         return compiler;
