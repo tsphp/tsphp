@@ -16,6 +16,7 @@
  */
 package ch.tutteli.tsphp;
 
+import ch.tutteli.tsphp.common.CompilationUnitDto;
 import ch.tutteli.tsphp.common.ICompiler;
 import ch.tutteli.tsphp.common.ICompilerListener;
 import ch.tutteli.tsphp.common.IErrorLogger;

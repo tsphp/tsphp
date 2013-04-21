@@ -16,24 +16,16 @@
  */
 package ch.tutteli.tsphp;
 
-import ch.tutteli.tsphp.common.ITSPHPAst;
-import org.antlr.runtime.tree.CommonTreeNodeStream;
+import ch.tutteli.tsphp.common.ICompiler;
 
 /**
  *
  * @author Robert Stoll <rstoll@tutteli.ch>
  */
-public class CompilationUnitDto 
+public interface ICompilerInitialiser
 {
 
-    public String id;
-    public ITSPHPAst compilationUnit;
-    public CommonTreeNodeStream treeNodeStream;
+    ICompiler create();
 
-    public CompilationUnitDto(String theId, ITSPHPAst theCompilationUnit,
-            CommonTreeNodeStream theTreeNodeStream) {
-        id = theId;
-        compilationUnit = theCompilationUnit;
-        treeNodeStream = theTreeNodeStream;
-    }
+    ICompiler create(final int numberOfWorkers);
 }

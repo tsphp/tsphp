@@ -1,6 +1,6 @@
-Type safe PHP: A compile time approach
+Type-Safe PHP: A compile time approach
 =====
-| Project has just started do not expect to find here the compiler (not yet).
+| You can find a demo app in src/test/java/ch/tutteli/demo
 | Visit the `wiki <http://tsphp.tutteli.ch/>`_ for more information on the project.
 
 

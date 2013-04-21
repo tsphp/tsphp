@@ -16,7 +16,7 @@
  */
 package ch.tutteli.tsphp.demo;
 
-import ch.tutteli.tsphp.CompilerInitialiser;
+import ch.tutteli.tsphp.HardCodedCompilerInitialiser;
 import ch.tutteli.tsphp.common.ICompiler;
 import ch.tutteli.tsphp.common.ICompilerListener;
 import ch.tutteli.tsphp.common.IErrorLogger;
@@ -51,7 +51,7 @@ public class CompilerDemo extends javax.swing.JFrame implements ICompilerListene
         TextLineNumber tln = new TextLineNumber(txtTSPHP);
         scrollTSPHP.setRowHeaderView(tln);
 
-        compiler = new CompilerInitialiser().create();
+        compiler = new HardCodedCompilerInitialiser().create();
         compiler.registerCompilerListener(this);
         compiler.addErrorLogger(this);
     }

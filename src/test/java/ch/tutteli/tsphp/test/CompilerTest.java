@@ -17,7 +17,7 @@
 package ch.tutteli.tsphp.test;
 
 import ch.tutteli.tsphp.Compiler;
-import ch.tutteli.tsphp.CompilerInitialiser;
+import ch.tutteli.tsphp.HardCodedCompilerInitialiser;
 import ch.tutteli.tsphp.common.CompilerListener;
 import ch.tutteli.tsphp.common.ICompiler;
 import ch.tutteli.tsphp.common.IParser;
@@ -54,7 +54,7 @@ public class CompilerTest
     @Test
     public void testAddInputAfterCompileWithoutReset() throws InterruptedException {
 
-        ICompiler compiler = new CompilerInitialiser().create();
+        ICompiler compiler = new HardCodedCompilerInitialiser().create();
         compiler.compile();
         try {
             compiler.addCompilationUnit("test", "int $a;");
@@ -94,7 +94,7 @@ public class CompilerTest
 
         ICompiler compiler = getCompiler();
         compiler.addCompilationUnit("test", "int $a;");
-        compileAndCheck(compiler, "namespace{\n    $a;\n}");
+        compileAndCheck(compiler, "<?php\nnamespace{\n    $a;\n}\n?>");
     }
 
     @Test
@@ -103,16 +103,16 @@ public class CompilerTest
 
         ICompiler compiler = getCompiler();
         compiler.addCompilationUnit("test", "int $a;");
-        compileAndCheck(compiler, "namespace{\n    $a;\n}");
+        compileAndCheck(compiler, "<?php\nnamespace{\n    $a;\n}\n?>");
         compiler.reset();
         lock = new CountDownLatch(1);
         compiler.addCompilationUnit("test", "int $a = 1;");
-        compileAndCheck(compiler, "namespace{\n    $a = 1;\n}");
+        compileAndCheck(compiler, "<?php\nnamespace{\n    $a = 1;\n}\n?>");
 
     }
 
     private ICompiler getCompiler() {
-        ICompiler compiler = new CompilerInitialiser().create();
+        ICompiler compiler = new HardCodedCompilerInitialiser().create();
         compiler.registerCompilerListener(new CompilerListener()
         {
             @Override

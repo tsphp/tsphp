@@ -30,15 +30,17 @@ import java.util.Collection;
  *
  * @author Robert Stoll <rstoll@tutteli.ch>
  */
-public class CompilerInitialiser
+public class HardCodedCompilerInitialiser implements ICompilerInitialiser
 {
 
     private static final int CORE_MULTIPLICATION_FACTOR = 4;
 
+    @Override
     public ICompiler create() {
         return create(Runtime.getRuntime().availableProcessors() * CORE_MULTIPLICATION_FACTOR);
     }
 
+    @Override
     public ICompiler create(final int numberOfWorkers) {
         Collection<ITranslatorFactory> translatorFactories = new ArrayDeque();
         translatorFactories.add(new PHP54TranslatorFactory());
