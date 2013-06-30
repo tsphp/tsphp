@@ -69,11 +69,11 @@ public class CompilerDemo extends javax.swing.JFrame implements ICompilerListene
         jSplitPane2 = new javax.swing.JSplitPane();
         jSplitPane1 = new javax.swing.JSplitPane();
         scrollPHP = new javax.swing.JScrollPane();
-        txtPHP = new javax.swing.JTextArea();
+        txtPHP = new UndoableTextArea();
         scrollTSPHP = new javax.swing.JScrollPane();
-        txtTSPHP = new javax.swing.JTextArea();
+        txtTSPHP = new UndoableTextArea();
         jScrollPane2 = new javax.swing.JScrollPane();
-        txtOutput = new javax.swing.JTextArea();
+        txtOutput = new UndoableTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("TSPHP Demonstration");
@@ -205,9 +205,9 @@ public class CompilerDemo extends javax.swing.JFrame implements ICompilerListene
     private javax.swing.JSplitPane jSplitPane2;
     private javax.swing.JScrollPane scrollPHP;
     private javax.swing.JScrollPane scrollTSPHP;
-    private javax.swing.JTextArea txtOutput;
-    private javax.swing.JTextArea txtPHP;
-    private javax.swing.JTextArea txtTSPHP;
+    private UndoableTextArea txtOutput;
+    private UndoableTextArea txtPHP;
+    private UndoableTextArea txtTSPHP;
     // End of variables declaration//GEN-END:variables
 
     @Override
