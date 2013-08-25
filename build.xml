@@ -26,8 +26,6 @@
 
     <!-- Properties hierarchisch einlesen -->
     <property file="${basedir}/build.properties" />
-    <property file="${basedir}/../build.properties" />
-    <property file="${user.home}/build.properties" />
 
     <!-- project-properties (last defaults), set them in build.properties!) -->
     <property name="proj.modul" value="xxx" />
@@ -41,12 +39,11 @@
     <property environment="env" />
 
     <!-- setting source location -->
-    <property name="bin" location="${basedir}/bin" />
     <property name="lib" location="${basedir}/lib" />
     <property name="libdev" location="${lib}/dev" />
     <property name="src" location="${basedir}/src" />
-    <property name="src.main" location="${src}/main/java" />
-    <property name="src.test" location="${src}/test/java" />
+    <property name="src.main" location="${src}" />
+    <property name="src.test" location="${basedir}/test" />
     <property name="common.jar" location="${basedir}/../TSPHP-common/build/lib" />
     <property name="parser.jar" location="${basedir}/../TSPHP-parser/build/lib"/>
     <property name="typechecker.jar" location="${basedir}/../TSPHP-typechecker/build/lib"/>
@@ -247,7 +244,6 @@
                forkmode="once"
                showoutput="true"
                failureproperty="test.failed">
-            <jvmarg value="${test.vm.param}" />
             <sysproperty key="proj.basedir" value="${basedir}" />
             <formatter usefile="false" type="brief" />
             <formatter type="xml" />
@@ -267,30 +263,6 @@
         <junit.report />
         <coverage.report />
         <fail message="JUnit tests FAILED!" if="test.failed" />
-    </target>
-   
-    <target name="test.single" depends="jar">
-        <fail unless="test.class">Must set property 'test.class'</fail>
-        <junit fork="true" printsummary="off" > 
-            <classpath refid="test"/>
-            <formatter type="plain" usefile="false"/>
-            <test name="${test.class}"/>
-        </junit>
-    </target>
-    
-    <target name="test.debug.single" depends="jar">
-        <fail unless="test.class">Must set property 'test.class'</fail>
-        <nbjpdastart addressproperty="jpda.address" name="TSPHP-grammar" transport="dt_socket">
-            <classpath refid="test"/>
-        </nbjpdastart>
-        <junit fork="true" printsummary="off" >
-            <classpath refid="test"/>
-            <formatter type="plain" usefile="false"/>
-            <test name="${test.class}"/>
-            
-            <jvmarg value="-Xdebug" />
-            <jvmarg value="-Xrunjdwp:transport=dt_socket,address=${jpda.address}"/>
-        </junit>
     </target>
 
     <!-- ================================================================== -->
@@ -316,23 +288,6 @@
               out="${checkstyle}/index.html"
               style="${libdev}/checkstyle/style/checkstyle-noframes-severity-sorted.xsl" />
     </target>
-
-    <!-- ================================================================== -->
-    <!-- Target: classycle -->
-    <!-- ================================================================== -->
-    <target name="classycle" depends="jar" description="classycle report">
-        <taskdef name="classycleReport" classname="classycle.ant.ReportTask" classpathref="libsetdev" />
-        <mkdir dir="${classycle}" />
-        <classycleReport reportFile="${classycle}/classycle.xml">
-            <fileset dir="${target}/lib/">
-                <include name="${distname}.jar" />
-            </fileset>
-        </classycleReport>
-        <xslt in="${classycle}/classycle.xml" out="${classycle}/index.html" style="${libdev}/classycle/style/reportXMLtoHTML.xsl" />
-        <copy todir="${classycle}/images">
-            <fileset dir="${libdev}/classycle/images" includes="*.png" />
-        </copy>
-    </target> 
    
     <!-- ================================================================== -->
     <!-- Target: pmd -->
@@ -409,7 +364,7 @@
             <![CDATA[<h1>Dokumentation</h1>]]>
             </doctitle>
             <bottom>
-            <![CDATA[<i>Copyright 2012 Hochschule Luzern Technik & Architektur, Switzerland</i>]]>
+            <![CDATA[<i>Copyright 2013 Robert Stoll <a href="mailto:rstoll@tutteli.ch">mailto:rstoll@tutteli.ch</a></i>]]>
             </bottom>
             <fileset dir="${src.main}">
                 <include name="**/*.java" />
@@ -453,8 +408,10 @@
                 <include name="**/*" />
                 <exclude name="build/**" />
                 <exclude name="nbproject/**" />
+                <exclude name="out/**" />
                 <exclude name="target/**" />
                 <exclude name=".*/**" />
+                <exclude name="*.iml" />
                 <exclude name="pom.xml" />
                 <exclude name="*.jenkins" />
             </zipfileset>
@@ -469,18 +426,6 @@
             <classpath>
                 <path location="${target}/lib/${distname}.jar" />
                 <path refid="libset" />
-            </classpath>
-        </java>
-    </target>
-    
-    <target name="run.single" depends="jar">
-        <fail unless="run.class">Must set property 'run.class'</fail>
-        <java classname="${run.class}" failonerror="true" fork="true">
-            <classpath>
-                <path location="${test-classes}" />
-                <path location="${classes}" />
-                <path refid="libset" />
-                <path refid="libsetdev" />
             </classpath>
         </java>
     </target>
@@ -545,7 +490,7 @@
                         <fileset dir="${src.main}" />
                     </sourcefiles>
                 </structure>
-                <html destdir="${coverage}" footer="Type safe PHP: A compile time approach" />
+                <html destdir="${coverage}" footer="Type-Safe PHP: A compile time approach" />
                 <xml destfile="${coverage}/coverage.xml" />
             </jacoco:report>
         </sequential>
