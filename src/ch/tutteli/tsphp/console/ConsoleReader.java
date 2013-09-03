@@ -26,7 +26,7 @@ import java.io.IOException;
 public class ConsoleReader implements IConsoleReader
 {
 
-    ICompiler compilerController;
+    private ICompiler compilerController;
 
     public ConsoleReader(ICompiler controller) {
         compilerController = controller;

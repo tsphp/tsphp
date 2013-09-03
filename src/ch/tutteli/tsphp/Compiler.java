@@ -65,9 +65,9 @@ public class Compiler implements ICompiler
     private Map<String, String> translations = new HashMap<>();
     private Collection<Future> tasks = new ArrayDeque<>();
 
-    public Compiler(ITSPHPAstAdaptor theAdaptor, IParser theParser, ITypeChecker theTypeChecker,
+    public Compiler(ITSPHPAstAdaptor theAstAdaptor, IParser theParser, ITypeChecker theTypeChecker,
             Collection<ITranslatorFactory> theTranslatorFactories, int aNumberOfWorkers) {
-        astAdaptor = theAdaptor;
+        astAdaptor = theAstAdaptor;
         typeChecker = theTypeChecker;
         parser = theParser;
         numberOfWorkers = aNumberOfWorkers;
@@ -141,8 +141,8 @@ public class Compiler implements ICompiler
         add(new ParseAndDefinitionPhaseRunner(id, new IParserMethod()
         {
             @Override
-            public ParserUnitDto parser(IParser parser) {
-                return parser.parse(chars, numberOfActualCharsInArray);
+            public ParserUnitDto parser(IParser theParser) {
+                return theParser.parse(chars, numberOfActualCharsInArray);
             }
         }));
     }
@@ -152,8 +152,8 @@ public class Compiler implements ICompiler
         add(new ParseAndDefinitionPhaseRunner(id, new IParserMethod()
         {
             @Override
-            public ParserUnitDto parser(IParser parser) throws IOException {
-                return parser.parseInputStream(inputStream);
+            public ParserUnitDto parser(IParser theParser) throws IOException {
+                return theParser.parseInputStream(inputStream);
             }
         }));
     }
@@ -163,8 +163,8 @@ public class Compiler implements ICompiler
         add(new ParseAndDefinitionPhaseRunner(id, new IParserMethod()
         {
             @Override
-            public ParserUnitDto parser(IParser parser) throws IOException {
-                return parser.parseInputStream(inputStream, size);
+            public ParserUnitDto parser(IParser theParser) throws IOException {
+                return theParser.parseInputStream(inputStream, size);
             }
         }));
     }
@@ -174,8 +174,8 @@ public class Compiler implements ICompiler
         add(new ParseAndDefinitionPhaseRunner(id, new IParserMethod()
         {
             @Override
-            public ParserUnitDto parser(IParser parser) throws IOException {
-                return parser.parseInputStream(inputStream, encoding);
+            public ParserUnitDto parser(IParser theParser) throws IOException {
+                return theParser.parseInputStream(inputStream, encoding);
             }
         }));
     }
@@ -186,8 +186,8 @@ public class Compiler implements ICompiler
         add(new ParseAndDefinitionPhaseRunner(id, new IParserMethod()
         {
             @Override
-            public ParserUnitDto parser(IParser parser) throws IOException {
-                return parser.parseInputStream(inputStream, size, encoding);
+            public ParserUnitDto parser(IParser theParser) throws IOException {
+                return theParser.parseInputStream(inputStream, size, encoding);
             }
         }));
     }
@@ -198,8 +198,8 @@ public class Compiler implements ICompiler
         add(new ParseAndDefinitionPhaseRunner(id, new IParserMethod()
         {
             @Override
-            public ParserUnitDto parser(IParser parser) throws IOException {
-                return parser.parseInputStream(inputStream, size, readBufferSize, encoding);
+            public ParserUnitDto parser(IParser theParser) throws IOException {
+                return theParser.parseInputStream(inputStream, size, readBufferSize, encoding);
             }
         }));
     }
@@ -210,8 +210,8 @@ public class Compiler implements ICompiler
         add(new ParseAndDefinitionPhaseRunner(pathToFileInclFileName, new IParserMethod()
         {
             @Override
-            public ParserUnitDto parser(IParser parser) throws IOException {
-                return parser.parseFile(pathToFileInclFileName);
+            public ParserUnitDto parser(IParser theParser) throws IOException {
+                return theParser.parseFile(pathToFileInclFileName);
             }
         }));
     }
@@ -221,8 +221,8 @@ public class Compiler implements ICompiler
         add(new ParseAndDefinitionPhaseRunner(pathToFileInclFileName, new IParserMethod()
         {
             @Override
-            public ParserUnitDto parser(IParser parser) throws IOException {
-                return parser.parseFile(pathToFileInclFileName, encoding);
+            public ParserUnitDto parser(IParser theParser) throws IOException {
+                return theParser.parseFile(pathToFileInclFileName, encoding);
             }
         }));
     }
@@ -292,8 +292,7 @@ public class Compiler implements ICompiler
                     tasks = new ArrayDeque<>();
                     callback.run();
                 } catch (Exception ex) {
-                    TSPHPException exception = new TSPHPException("Unexpected exception occured: " + ex.getMessage(), ex);
-                    log(exception);
+                    log(new TSPHPException("Unexpected exception occurred: " + ex.getMessage(), ex));
                 }
             }
         }).start();
@@ -301,7 +300,7 @@ public class Compiler implements ICompiler
     }
 
     private void doReferencePhase() {
-        informParsgingDefinitionCompleted();
+        informParsingDefinitionCompleted();
         if (!compilationUnits.isEmpty()) {
             for (CompilationUnitDto compilationUnit : compilationUnits) {
                 tasks.add(executorService.submit(new ReferencePhaseRunner(compilationUnit)));
@@ -359,7 +358,7 @@ public class Compiler implements ICompiler
                 informCompilingCompleted();
             }
         } else {
-            log(new TSPHPException("Translation aborted due to occured errors"));
+            log(new TSPHPException("Translation aborted due to occurred errors"));
             informCompilingCompleted();
         }
     }
@@ -369,7 +368,7 @@ public class Compiler implements ICompiler
         return translations;
     }
 
-    private void informParsgingDefinitionCompleted() {
+    private void informParsingDefinitionCompleted() {
         for (ICompilerListener listener : compilerListeners) {
             listener.afterParsingAndDefinitionPhaseCompleted();
         }
@@ -394,6 +393,9 @@ public class Compiler implements ICompiler
         }
     }
 
+    /**
+     * Delegate of a parser method which returns a ParserUnitDto.
+     */
     private interface IParserMethod
     {
 
@@ -423,8 +425,7 @@ public class Compiler implements ICompiler
                 compilationUnits.add(new CompilationUnitDto(id, parserUnit.compilationUnit, commonTreeNodeStream));
 
             } catch (Exception ex) {
-                TSPHPException exception = new TSPHPException("Unexpected exception occured: " + ex.getMessage(), ex);
-                log(exception);
+                log(new TSPHPException("Unexpected exception occurred: " + ex.getMessage(), ex));
             }
         }
     }
@@ -443,8 +444,7 @@ public class Compiler implements ICompiler
             try {
                 typeChecker.enrichWithReferences(dto.compilationUnit, dto.treeNodeStream);
             } catch (Exception ex) {
-                TSPHPException exception = new TSPHPException("Unexpected exception occured: " + ex.getMessage(), ex);
-                log(exception);
+                log(new TSPHPException("Unexpected exception occurred: " + ex.getMessage(), ex));
             }
         }
     }
@@ -463,8 +463,7 @@ public class Compiler implements ICompiler
             try {
                 typeChecker.doTypeChecking(dto.compilationUnit, dto.treeNodeStream);
             } catch (Exception ex) {
-                TSPHPException exception = new TSPHPException("Unexpected exception occured: " + ex.getMessage(), ex);
-                log(exception);
+                log(new TSPHPException("Unexpected exception occurred: " + ex.getMessage(), ex));
             }
         }
     }
@@ -489,8 +488,7 @@ public class Compiler implements ICompiler
                 String translation = translator.translate(dto.treeNodeStream);
                 translations.put(dto.id, translation);
             } catch (Exception ex) {
-                TSPHPException exception = new TSPHPException("Unexpected exception occured: " + ex.getMessage(), ex);
-                log(exception);
+                log(new TSPHPException("Unexpected exception occurred: " + ex.getMessage(), ex));
             }
         }
     }
