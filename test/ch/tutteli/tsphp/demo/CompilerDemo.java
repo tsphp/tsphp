@@ -1,19 +1,3 @@
-/*
- * Copyright 2013 Robert Stoll <rstoll@tutteli.ch>
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * 
- */
 package ch.tutteli.tsphp.demo;
 
 import ch.tutteli.tsphp.HardCodedCompilerInitialiser;
@@ -32,10 +16,6 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import org.antlr.runtime.RecognitionException;
 
-/**
- *
- * @author Robert Stoll <rstoll@tutteli.ch>
- */
 public class CompilerDemo extends javax.swing.JFrame implements ICompilerListener, IErrorLogger
 {
 
@@ -180,13 +160,7 @@ public class CompilerDemo extends javax.swing.JFrame implements ICompilerListene
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(CompilerDemo.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(CompilerDemo.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(CompilerDemo.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(CompilerDemo.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
