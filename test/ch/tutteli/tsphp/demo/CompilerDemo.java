@@ -27,9 +27,10 @@ public class CompilerDemo extends javax.swing.JFrame implements ICompilerListene
     public CompilerDemo() {
         initComponents();
         this.setExtendedState(this.getExtendedState() | JFrame.MAXIMIZED_BOTH);
-        String path = "./build/classes-test/ch/tutteli/tsphp/demo/tsphp.png";
+        String path = "./bin/tsphp.png";
         setIconImage(new ImageIcon(path).getImage());
 
+        txtTSPHP.setTabSize(4);
         TextLineNumber tln = new TextLineNumber(txtTSPHP);
         scrollTSPHP.setRowHeaderView(tln);
 
