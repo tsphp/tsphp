@@ -36,8 +36,6 @@
     <property name="classes" location="${target}/classes" />
     <property name="test-classes" location="${target}/classes-test" />
     <property name="dist" location="${target}/dist" />
-    <property name="generated" location="${target}/generated" />
-    <property name="classycle" location="${target}/classycle" /> 
     <property name="javadoc" location="${target}/javadoc" />
     <property name="junit" location="${target}/junit" />
     <property name="coverage" location="${target}/coverage" />
@@ -101,7 +99,6 @@
     <target name="init" depends="info" description="create directory structure">
         <mkdir dir="${classes}" />
         <mkdir dir="${test-classes}" />
-        <mkdir dir="${generated}" />
     </target>
 
     <!-- ================================================================== -->
@@ -123,7 +120,6 @@
                includeAntRuntime="false"
                fork="true">
             <src path="${src.main}" />
-            <src path="${generated}" />
             <classpath>
                 <path refid="libset" />
             </classpath>
@@ -132,11 +128,6 @@
             <fileset dir="${src.main}">
                 <include name="**/*.properties" />
                 <include name="**/*.xml" />
-            </fileset>
-        </copy>
-        <copy todir="${test-classes}">
-            <fileset dir="${src.test}">
-                <include name="**/*.png" />
             </fileset>
         </copy>
         <javac srcdir="${src.test}"
@@ -219,6 +210,7 @@
         <mkdir dir="${junit}" />
         <mkdir dir="${coverage}" />
         <touch file="${coverage.data}" />
+        <property name="test.vm.param" value=""/>
         <jacoco:agent property="test.vm.param" destfile="${coverage.data}" excludes="**/ch/tutteli/tsphp/Main.class"/>
         <junit printsummary="off"
                haltonfailure="false"
@@ -341,8 +333,7 @@
                  author="true"
                  version="true"
                  use="true"
-                 windowtitle="${proj.name}"
-                 overview="${src.main}/overview.html">
+                 windowtitle="${proj.name}">
             <doctitle>
             <![CDATA[<h1>Dokumentation</h1>]]>
             </doctitle>
@@ -367,13 +358,13 @@
     <!--          werden, wenn Fehler vorhanden sind (compile, test etc.) -->
     <!-- ================================================================== -->
     <target name="dist"
-            depends="clean, report, jar,findbugs, build"
+            depends="clean, report, jar,findbugs, build, demo"
             description="create distributions">
         <mkdir dir="${target}/dist" />
         <zip destfile="${target}/dist/${distname}-bin.zip">
             <zipfileset dir="${basedir}" prefix="${distname}">
                 <include name="README.md" />
-                <include name="LICENSE.txt" />
+                <include name="LICENSE" />
             </zipfileset>
             <zipfileset dir="${target}/lib" prefix="${distname}/lib">
                 <include name="*.jar" />
@@ -387,7 +378,7 @@
             </zipfileset>
         </zip>
         <zip destfile="${target}/dist/${distname}-src.zip">
-            <zipfileset dir="${basedir}" prefix="${proj.name}">
+            <zipfileset dir="${basedir}" prefix="${distname}">
                 <include name="**/*" />
                 <exclude name="build/**" />
                 <exclude name="nbproject/**" />
@@ -397,6 +388,15 @@
                 <exclude name="*.iml" />
                 <exclude name="pom.xml" />
                 <exclude name="*.jenkins" />
+            </zipfileset>
+        </zip>
+        <zip destfile="${target}/dist/${distname}-demo.zip">
+            <zipfileset dir="${basedir}" prefix="${distname}">
+                <include name="README.md" />
+                <include name="LICENSE" />
+            </zipfileset>
+            <zipfileset dir="${target}/demo" prefix="${distname}">
+                <include name="**/*" />
             </zipfileset>
         </zip>
     </target>
@@ -435,8 +435,58 @@
     <!-- ================================================================== -->
     <target name="build" depends="jar, test" description="complete build">
     </target>
-   
-    
+
+
+
+    <!-- ================================================================== -->
+    <!-- Target: demo -->
+    <!-- ================================================================== -->
+    <target name="demo" depends="clean, jar" description="complete build">
+        <mkdir dir="${target}/demo" />
+        <mkdir dir="${target}/demo/bin" />
+        <copy todir="${target}/demo/bin" flatten="true">
+            <fileset dir="${lib}">
+                <include name="*.jar" />
+            </fileset>
+            <fileset dir="${target}/lib">
+                <include name="*.jar" />
+            </fileset>
+            <fileset dir="${src.test}">
+                <include name="**/*.png" />
+            </fileset>
+        </copy>
+        <property name="jarclasspath" value=""/>
+        <getFilesAsPath property="jarclasspath"
+                        file="${target}/demo/Start Demo.bat" refbasedir="${target}/demo" separator=" ">
+            <fileset dir="${target}/demo/bin">
+                <include name="*.jar" />
+            </fileset>
+        </getFilesAsPath>
+
+        <jar jarfile="${target}/demo/${distname}-demo.jar" basedir="${test-classes}" excludes="**/test/*">
+            <manifest>
+                <attribute name="Implementation-Title" value="${proj.name} - demo" />
+                <attribute name="Implementation-Version" value="${proj.version}" />
+                <attribute name="Implementation-Vendor" value="" />
+                <attribute name="Implementation-User" value="${proj.autor}" />
+                <attribute name="Built-By" value="${proj.autor}" />
+                <attribute name="Sealed" value="false" />
+                <attribute name="Main-Class" value="ch.tutteli.tsphp.demo.CompilerDemo" />
+                <attribute name="Class-Path" value="${jarclasspath}"/>
+            </manifest>
+        </jar>
+        <property name="batclasspath" value=""/>
+        <getFilesAsPath property="batclasspath" file="${target}/demo/Start Demo.bat" refbasedir="${target}/demo">
+            <fileset dir="${target}/demo/bin">
+                <include name="*.jar" />
+            </fileset>
+        </getFilesAsPath>
+        <echo  file="${target}/demo/Start Demo.bat"
+               message="java -cp ./${distname}-demo.jar${batclasspath} ch.tutteli.tsphp.demo.CompilerDemo"/>
+
+        <echo  file="${target}/demo/Start Demo.bat" append="true" message=" "/>
+    </target>
+
 
     <!-- ****************************************************************** -->
     <!-- * MACROS  -->
@@ -478,4 +528,61 @@
             </jacoco:report>
         </sequential>
     </macrodef>
+
+
+    <scriptdef name="getFilesAsPath" language="javascript">
+        <attribute name="property"/>
+        <attribute name="file"/>
+        <attribute name="refbasedir"/>
+        <attribute name="separator"/>
+        <attribute name="ref_with_dot_slash"/>
+        <element name="fileset" type="fileset"/>
+
+        <![CDATA[
+            var property = attributes.get("property");
+            var file = attributes.get("file");
+            var refbasedir = attributes.get("refbasedir");
+
+            //check input
+            if(property     == null)  self.fail("attribute property must be specified");
+            if(file         == null)  self.fail("attribute file must be specified");
+            if(refbasedir   == null)  self.fail("attribute refBaseDir must be specified");
+
+            importClass(java.io.File);
+
+            //necessary to convert / in windows to \
+            var refPath = new File(refbasedir).toString();
+            var refPathLength = refPath.length();
+            file = new File(file);
+
+            var separator = attributes.get("separator");
+            if(separator == null) separator = ";";
+            var refWithDotSlash = attributes.get("ref_with_dot_slash");
+            if(refWithDotSlash!=false) refWithDotSlash = true;
+
+            filesets = elements.get("fileset");
+
+            var message="";
+
+            for (i = 0; i < filesets.size(); ++i) {
+                fileset = filesets.get(i);
+
+                var basedir  = fileset.getDir(project);
+                var path = basedir.toString();
+                if(path.substring(0, refPathLength) == refPath){
+                    path = (refWithDotSlash ? "./":"") + path.substring(refPathLength+1);
+                }
+
+                scanner = fileset.getDirectoryScanner(project);
+                scanner.scan();
+                files = scanner.getIncludedFiles();
+                for( j=0; j < files.length; j++) {
+                    message += separator + path + "/" + files[j];
+                }
+            }
+            project.setProperty(property, message);
+        ]]>
+    </scriptdef>
+
+
 </project>
