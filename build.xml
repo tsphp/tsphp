@@ -10,8 +10,6 @@
     <property file="${basedir}/build.properties" />
 
     <!-- project-properties (last defaults), set them in build.properties!) -->
-    <property name="proj.modul" value="xxx" />
-    <property name="proj.group" value="gxx" />
     <property name="proj.name" value="template" />
     <property name="proj.version" value="0.0.0" />
     <property name="proj.startclass" value="ch.hslu.demo.Demo" />
