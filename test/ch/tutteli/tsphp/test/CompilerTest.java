@@ -19,12 +19,15 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import junit.framework.Assert;
 import org.antlr.runtime.CommonTokenStream;
+import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class CompilerTest
 {
@@ -47,7 +50,7 @@ public class CompilerTest
     @Test
     public void testResetDuringCompilation() throws InterruptedException {
 
-        ICompiler compiler = getSlowCompiler();
+        ICompiler compiler = createSlowCompiler();
         compiler.compile();
         try {
             compiler.reset();
@@ -58,7 +61,7 @@ public class CompilerTest
 
     @Test
     public void testHasFoundErrorDuringCompilation() throws InterruptedException {
-        ICompiler compiler = getSlowCompiler();
+        ICompiler compiler = createSlowCompiler();
         compiler.addCompilationUnit("test", "int $a = 1");
         compiler.compile();
         try {
@@ -114,14 +117,14 @@ public class CompilerTest
         Assert.assertEquals(translation, translations.get("test").replaceAll("\r", ""));
     }
 
-    private ICompiler getSlowCompiler() {
+    private ICompiler createSlowCompiler() {
         Collection<ITranslatorFactory> translatorFactories = new ArrayDeque<>();
         translatorFactories.add(new PHP54TranslatorFactory());
 
         ITSPHPAstAdaptor adaptor = new TSPHPAstAdaptor();
-        IParser spy = Mockito.mock(IParser.class);
+        IParser spyParser = mock(IParser.class);
 
-        Mockito.when(spy.parse(Mockito.anyString())).thenAnswer(new Answer<Object>()
+        when(spyParser.parse(Mockito.anyString())).thenAnswer(new Answer<Object>()
         {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
@@ -131,7 +134,7 @@ public class CompilerTest
         });
         ICompiler compiler = new Compiler(
                 adaptor,
-                spy,
+                spyParser,
                 new TypeChecker(),
                 translatorFactories,
                 1);

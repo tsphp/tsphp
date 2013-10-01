@@ -208,7 +208,6 @@
         <mkdir dir="${junit}" />
         <mkdir dir="${coverage}" />
         <touch file="${coverage.data}" />
-        <property name="test.vm.param" value=""/>
         <jacoco:agent property="test.vm.param" destfile="${coverage.data}" excludes="**/ch/tutteli/tsphp/Main.class"/>
         <junit printsummary="off"
                haltonfailure="false"
@@ -216,6 +215,7 @@
                forkmode="once"
                showoutput="true"
                failureproperty="test.failed">
+            <!-- Do not delete/exchange this property, it is set by jacoco:agent -->
             <jvmarg value="${test.vm.param}" />
 			<sysproperty key="proj.basedir" value="${basedir}" />
             <formatter usefile="false" type="brief" />
@@ -311,8 +311,10 @@
         <findbugs home="${libdev}/findbugs"
                   output="xml:withMessages"
                   outputFile="${findbugs}/findbugs.xml" >
-            <auxClasspath path="${lib}" />
-            <sourcePath path="${src.main}" />
+            <auxclasspath>
+                <path refid="libset" />
+            </auxclasspath>
+            <sourcepath path="${src.main}" />
             <class location="${classes}" />
         </findbugs>
         <xslt in="${findbugs}/findbugs.xml" out="${findbugs}/index.html" style="${libdev}/findbugs/style/fancy.xsl"/>
