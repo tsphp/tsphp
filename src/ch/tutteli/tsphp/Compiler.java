@@ -97,8 +97,8 @@ public class Compiler implements ICompiler
         add(new ParseAndDefinitionPhaseRunner(id, new IParserMethod()
         {
             @Override
-            public ParserUnitDto parser(IParser parser) {
-                return parser.parse(string);
+            public ParserUnitDto parser(IParser theParser) {
+                return theParser.parse(string);
             }
         }));
     }
@@ -379,7 +379,7 @@ public class Compiler implements ICompiler
     private interface IParserMethod
     {
 
-        public ParserUnitDto parser(IParser parser) throws IOException;
+        ParserUnitDto parser(IParser parser) throws IOException;
     }
 
     private class ParseAndDefinitionPhaseRunner implements Runnable
