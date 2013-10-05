@@ -1,0 +1,484 @@
+<!--
+ * Modified version of build.xml created by
+ * Roland Gisler, Hochschule Luzern Technik & Architektur, Switzerland
+ * Original file was released under Apache License 2.0 as well
+ *
+-->
+<project name="build-common" basedir="." xmlns:jacoco="antlib:org.jacoco.ant">
+
+    <!-- import project properties !-->
+    <property file="${basedir}/build.properties" />
+
+    <!-- setting general properties -->
+    <property name="proj.java.version" value="1.7"/>
+
+    <!-- setting source location -->
+    <property name="lib" location="${basedir}/lib"/>
+    <property name="libdev" location="${lib}/dev"/>
+    <property name="src" location="${basedir}/src"/>
+    <property name="src.antlr" location="${basedir}/antlr"/>
+    <property name="src.main" location="${src}"/>
+    <property name="src.test" location="${basedir}/test"/>
+    <property name="common.jar" location="${basedir}/../TSPHP-common/build/lib" />
+
+    <!-- setting target locations -->
+    <property name="target" location="${basedir}/build"/>
+    <property name="classes" location="${target}/classes"/>
+    <property name="test-classes" location="${target}/classes-test"/>
+    <property name="dist" location="${target}/dist"/>
+    <property name="javadoc" location="${target}/javadoc"/>
+    <property name="junit" location="${target}/junit"/>
+    <property name="coverage" location="${target}/coverage"/>
+    <property name="checkstyle" location="${target}/checkstyle"/>
+    <property name="pmd" location="${target}/pmd"/>
+    <property name="cpd" location="${target}/cpd"/>
+    <property name="findbugs" location="${target}/findbugs"/>
+
+    <!-- calculated properties -->
+    <property name="distname" value="${proj.name}-${proj.version}"/>
+    <property name="coverage.data" value="${coverage}/jacoco.exec"/>
+    <property name="checkstyle.config" value="${libdev}/checkstyle/cfg"/>
+    <property name="pmd.config" value="${libdev}/pmd/cfg"/>
+
+    <!-- define runtime libraries -->
+    <path id="libset">
+        <fileset dir="${lib}">
+            <include name="*.jar"/>
+        </fileset>
+    </path>
+
+    <!-- define build-time libraries (simplified)-->
+    <path id="libsetdev">
+        <fileset dir="${libdev}">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+
+    <!-- define path for test -->
+    <path id="testset">
+        <path location="${classes}"/>
+        <path refid="libset"/>
+        <path refid="libsetdev"/>
+    </path>
+
+    <!-- define path for test -->
+    <path id="unittestset">
+        <path location="${test-classes}"/>
+        <path refid="testset"/>
+    </path>
+
+    <!-- Taskdef for coverage -->
+    <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
+        <classpath path="${libdev}/jacoco/jacocoant.jar" />
+    </taskdef>
+
+    <!--====================================================================-->
+    <!-- info -->
+    <!--====================================================================-->
+    <target name="info" description="display runtime version info">
+        <echo message="=================================================" level="info" />
+        <echo message=" Building: ${proj.name} v. ${proj.version}" level="info" />
+        <echo message="=================================================" level="info" />
+        <echo message=" Plattform    : ${os.name}" level="info" />
+        <echo message=" Java Version : ${java.version} ${java.vendor}"
+              level="info" />
+        <echo message=" ANT Version  : ${ant.version}" level="info" />
+    </target>
+
+    <!-- ================================================================== -->
+    <!-- Target: init -->
+    <!-- ================================================================== -->
+    <target name="init" depends="info" description="create directory structure">
+        <mkdir dir="${classes}" />
+        <mkdir dir="${test-classes}" />
+    </target>
+
+    <!-- ================================================================== -->
+    <!-- Target: compile -->
+    <!-- ================================================================== -->
+
+    <target name="compile" depends="init, compile.prod, compile.properties, compile.test"
+            description="compile the source and tests ">
+    </target>
+
+    <target name="compile.prod">
+        <javac destdir="${classes}"
+               source="${proj.java.version}"
+               target="${proj.java.version}"
+               debug="yes"
+               includeAntRuntime="false"
+               fork="true">
+            <src path="${src.main}" />
+            <classpath refid="libset"/>
+        </javac>
+    </target>
+
+    <target name="compile.properties">
+        <copy todir="${classes}">
+            <fileset dir="${src.main}">
+                <include name="**/*.properties" />
+                <include name="**/*.xml" />
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="compile.test">
+
+        <javac srcdir="${src.test}"
+               destdir="${test-classes}"
+               source="${proj.java.version}"
+               target="${proj.java.version}"
+               debug="yes"
+               includeAntRuntime="false"
+               fork="true">
+            <classpath refid="testset" />
+        </javac>
+    </target>
+
+    <!-- ================================================================== -->
+    <!-- Target: jar -->
+    <!-- ================================================================== -->
+    <target name="jar" depends="compile" description="create jar">
+        <mkdir dir="${target}/lib" />
+        <jar jarfile="${target}/lib/${distname}.jar" basedir="${classes}">
+            <manifest>
+                <attribute name="Implementation-Title" value="${proj.name}" />
+                <attribute name="Implementation-Version" value="${proj.version}" />
+                <attribute name="Implementation-Vendor" value="" />
+                <attribute name="Implementation-User" value="${proj.autor}" />
+                <attribute name="Built-By" value="${proj.autor}" />
+                <attribute name="Sealed" value="false" />
+                <attribute name="Main-Class" value="${proj.startclass}" />
+            </manifest>
+        </jar>
+    </target>
+
+    <!-- ================================================================== -->
+    <!-- Target: build -->
+    <!-- ================================================================== -->
+    <target name="build" depends="jar, test" description="complete build">
+    </target>
+
+
+    <!-- ================================================================== -->
+    <!-- Target: run -->
+    <!-- ================================================================== -->
+    <target name="run" depends="jar" description="run the project">
+        <java classname="${proj.startclass}">
+            <classpath>
+                <path location="${target}/lib/${distname}.jar" />
+                <path refid="libset" />
+            </classpath>
+        </java>
+    </target>
+
+    <!-- ================================================================== -->
+    <!-- Target: clean -->
+    <!-- ================================================================== -->
+    <target name="clean" description="clean up">
+        <delete includeemptydirs="true" quiet="true">
+            <fileset dir="${target}" />
+        </delete>
+    </target>
+
+    <!-- ================================================================== -->
+    <!-- Target: dist -->
+    <!-- Hinweis: Spezielle Reihenfolge, damit QS-Reports auch erstellt -->
+    <!--          werden, wenn Fehler vorhanden sind (compile, test etc.) -->
+    <!-- ================================================================== -->
+    <target name="dist"
+            depends="clean, report, jar, build, findbugs"
+            description="create distributions">
+        <mkdir dir="${target}/dist" />
+        <zip destfile="${target}/dist/${distname}-bin.zip">
+            <zipfileset dir="${basedir}" prefix="${distname}">
+                <include name="README.md" />
+                <include name="LICENSE" />
+            </zipfileset>
+            <zipfileset dir="${target}/lib" prefix="${distname}/lib">
+                <include name="*.jar" />
+            </zipfileset>
+            <zipfileset dir="${lib}" prefix="${distname}/lib">
+                <include name="*.jar" />
+            </zipfileset>
+            <zipfileset dir="${javadoc}"  prefix="${distname}/doc">
+                <include name="**/*.*" />
+                <exclude name="javadoc.zip" />
+            </zipfileset>
+        </zip>
+        <zip destfile="${target}/dist/${distname}-src.zip">
+            <zipfileset dir="${basedir}" prefix="${distname}">
+                <include name="**/*" />
+                <exclude name="build/**" />
+                <exclude name="nbproject/**" />
+                <exclude name="out/**" />
+                <exclude name="target/**" />
+                <exclude name=".*/**" />
+                <exclude name="*.iml" />
+                <exclude name="pom.xml" />
+                <exclude name="*.jenkins" />
+            </zipfileset>
+        </zip>
+    </target>
+
+    <!-- ================================================================== -->
+    <!-- Target: test -->
+    <!-- ================================================================== -->
+    <target name="test" depends="jar" description="executes unittests">
+        <mkdir dir="${junit}" />
+        <mkdir dir="${coverage}" />
+        <touch file="${coverage.data}" />
+        <jacoco:agent property="test.vm.param" destfile="${coverage.data}" excludes="**/ch/tutteli/tsphp/Main.class"/>
+        <junit printsummary="off"
+               haltonfailure="false"
+               fork="true"
+               forkmode="once"
+               showoutput="true"
+               failureproperty="test.failed">
+            <!-- Do not delete/exchange this property, it is set by jacoco:agent -->
+            <jvmarg value="${test.vm.param}" />
+            <sysproperty key="proj.basedir" value="${basedir}" />
+            <formatter usefile="false" type="brief" />
+            <formatter type="xml" />
+            <batchtest todir="${junit}">
+                <fileset dir="${src.test}">
+                    <include name="**/*Test.java" />
+                    <exclude name="**/AllTest.java" />
+                </fileset>
+            </batchtest>
+            <classpath refid="unittestset"/>
+        </junit>
+        <junit.report />
+        <coverage.report />
+        <fail message="JUnit tests FAILED!" if="test.failed" />
+    </target>
+
+    <!-- ================================================================== -->
+    <!-- Target: reports -->
+    <!-- ================================================================== -->
+    <target name="report"
+            depends="checkstyle, pmd, cpd, javadoc"
+            description="complete reports">
+    </target>
+
+    <!-- ================================================================== -->
+    <!-- Target: checkstyle -->
+    <!-- ================================================================== -->
+    <target name="checkstyle" depends="init" description="checkstyle report">
+        <taskdef resource="checkstyletask.properties" classpathref="libsetdev" />
+        <mkdir dir="${checkstyle}" />
+
+        <replaceReportProperty dir="${checkstyle.config}" file="checkstyle.properties"/>
+
+        <checkstyle config="${checkstyle.config}/tsphp_checks.xml" properties="${checkstyle.config}/checkstyle.properties" failonviolation="false">
+            <formatter type="xml" toFile="${checkstyle}/checkstyle.xml" />
+            <fileset dir="${src.main}" includes="**/*.java" excludes="${checkstyle.excludes}" />
+        </checkstyle>
+        <xslt in="${checkstyle}/checkstyle.xml"
+              out="${checkstyle}/index.html"
+              style="${libdev}/checkstyle/style/checkstyle-noframes-severity-sorted.xsl" />
+    </target>
+
+    <!-- ================================================================== -->
+    <!-- Target: pmd -->
+    <!-- ================================================================== -->
+    <target name="pmd" depends="init" description="pmd report">
+        <taskdef name="pmd" classname="net.sourceforge.pmd.ant.PMDTask" classpathref="libsetdev" />
+        <mkdir dir="${pmd}" />
+
+        <replaceReportProperty dir="${pmd.config}" file="pmd_tsphp.xml"/>
+
+        <pmd rulesetfiles="${pmd.config}/pmd_tsphp.xml">
+            <formatter type="xml"
+                       toFile="${pmd}/pmd.xml"
+                       linkPrefix="../java2html/" />
+            <fileset dir="${src.main}" includes="**/*.java" excludes="${pmd.excludes}"/>
+        </pmd>
+        <xslt in="${pmd}/pmd.xml"
+              out="${pmd}/index.html"
+              style="${libdev}/pmd/style/pmd-report-per-class.xslt" />
+    </target>
+
+    <!-- ================================================================== -->
+    <!-- Target: cpd -->
+    <!-- ================================================================== -->
+    <target name="cpd" depends="init" description="cpd report">
+        <taskdef name="cpd" classname="net.sourceforge.pmd.cpd.CPDTask" classpathref="libsetdev" />
+        <mkdir dir="${cpd}" />
+        <cpd minimumTokenCount="100" outputFile="${cpd}/cpd.xml" format="xml">
+            <fileset dir="${src.main}" includes="**/*.java" excludes="${cpd.excludes}" />
+        </cpd>
+        <xslt in="${cpd}/cpd.xml" out="${cpd}/index.html" style="${libdev}/pmd/style/cpdhtml.xslt" />
+    </target>
+
+    <!-- ================================================================== -->
+    <!-- Target: findbugs -->
+    <!-- ================================================================== -->
+    <target name="findbugs" depends="init">
+        <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpathref="libsetdev"/>
+        <mkdir dir="${findbugs}" />
+        <findbugs home="${libdev}/findbugs"
+                  output="xml:withMessages"
+                  outputFile="${findbugs}/findbugs.xml" >
+            <auxclasspath>
+                <path refid="libset" />
+            </auxclasspath>
+            <sourcepath path="${src.main}" />
+            <class location="${classes}" />
+        </findbugs>
+        <xslt in="${findbugs}/findbugs.xml" out="${findbugs}/index.html" style="${libdev}/findbugs/style/fancy.xsl"/>
+    </target>
+
+    <!-- ================================================================== -->
+    <!-- Target: javadoc -->
+    <!-- ================================================================== -->
+    <target name="javadoc" depends="init" description="create JavaDoc">
+        <mkdir dir="${javadoc}" />
+        <javadoc defaultexcludes="yes"
+                 classpathref="libset"
+                 private="true"
+                 destdir="${javadoc}"
+                 encoding="utf-8"
+                 author="true"
+                 version="true"
+                 use="true"
+                 windowtitle="${proj.name}"
+                 bottom="${javadoc.footer}"
+                 doctitle="${javadoc.doctitle}">
+            <fileset dir="${src.main}" includes="**/*.java" excludes="${javadoc.excludes}"/>
+        </javadoc>
+        <zip destfile="${javadoc}/javadoc.zip">
+            <fileset dir="${javadoc}">
+                <include name="**/*" />
+                <exclude name="**/*.zip" />
+            </fileset>
+        </zip>
+    </target>
+
+    <target name="copyCommon" depends="" description="copy common library to the lib folder">
+        <copyComponent dir="${common.jar}" includes="TSPHP-common-*.jar"/>
+    </target>
+
+    <!-- ****************************************************************** -->
+    <!-- * MACROS  -->
+    <!-- ****************************************************************** -->
+
+    <!-- ================================================================== -->
+    <!-- Macro: junit.report -->
+    <!-- ================================================================== -->
+    <macrodef name="junit.report">
+        <sequential>
+            <junitreport todir="${junit}">
+                <fileset dir="${junit}">
+                    <include name="TEST-*.xml" />
+                </fileset>
+                <report format="frames" todir="${junit}" />
+            </junitreport>
+        </sequential>
+    </macrodef>
+
+    <!-- ================================================================== -->
+    <!-- Macro: coverage.report -->
+    <!-- ================================================================== -->
+    <macrodef name="coverage.report">
+        <sequential>
+            <jacoco:report>
+                <executiondata>
+                    <file file="${coverage.data}" />
+                </executiondata>
+                <structure name="${distname}">
+                    <classfiles>
+                        <fileset dir="${classes}" excludes="**/ch/tutteli/tsphp/Main.class"/>
+                    </classfiles>
+                    <sourcefiles encoding="UTF-8">
+                        <fileset dir="${src.main}" />
+                    </sourcefiles>
+                </structure>
+                <html destdir="${coverage}" footer="${coverage.report.footer}" />
+                <xml destfile="${coverage}/coverage.xml" />
+            </jacoco:report>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="copyComponent">
+        <attribute name="dir"/>
+        <attribute name="includes"/>
+        <sequential>
+            <delete>
+                <fileset dir="${lib}" includes="@{includes}"/>
+            </delete>
+            <copy todir="${lib}">
+                <fileset dir=" @{dir}" includes="@{includes}"/>
+            </copy>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="replaceReportProperty">
+        <attribute name="file"/>
+        <attribute name="dir"/>
+        <sequential>
+            <delete file="@{dir}/@{file}${pmd.config}/pmd_tsphp.xml"/>
+            <copy file="@{dir}/@{file}.tpl" tofile="@{dir}/@{file}">
+                <filterset>
+                    <filter token="DIR" value="@{dir}"/>
+                </filterset>
+            </copy>
+            <replace file="@{dir}/@{file}" token="\" value="/"/>
+        </sequential>
+    </macrodef>
+
+    <scriptdef name="getFilesAsPath" language="javascript">
+        <attribute name="property"/>
+        <attribute name="file"/>
+        <attribute name="refbasedir"/>
+        <attribute name="separator"/>
+        <attribute name="ref_with_dot_slash"/>
+        <element name="fileset" type="fileset"/>
+
+        <![CDATA[
+            var property = attributes.get("property");
+            var file = attributes.get("file");
+            var refbasedir = attributes.get("refbasedir");
+
+            //check input
+            if(property     == null)  self.fail("attribute property must be specified");
+            if(file         == null)  self.fail("attribute file must be specified");
+            if(refbasedir   == null)  self.fail("attribute refBaseDir must be specified");
+
+            importClass(java.io.File);
+
+            //necessary to convert / in windows to \
+            var refPath = new File(refbasedir).toString();
+            var refPathLength = refPath.length();
+            file = new File(file);
+
+            var separator = attributes.get("separator");
+            if(separator == null) separator = ";";
+            var refWithDotSlash = attributes.get("ref_with_dot_slash");
+            if(refWithDotSlash!=false) refWithDotSlash = true;
+
+            filesets = elements.get("fileset");
+
+            var message="";
+
+            for (i = 0; i < filesets.size(); ++i) {
+                fileset = filesets.get(i);
+
+                var basedir  = fileset.getDir(project);
+                var path = basedir.toString();
+                if(path.substring(0, refPathLength) == refPath){
+                    path = (refWithDotSlash ? "./":"") + path.substring(refPathLength+1);
+                }
+
+                scanner = fileset.getDirectoryScanner(project);
+                scanner.scan();
+                files = scanner.getIncludedFiles();
+                for( j=0; j < files.length; j++) {
+                    message += separator + path + "/" + files[j];
+                }
+            }
+            project.setProperty(property, message);
+        ]]>
+    </scriptdef>
+
+</project>
