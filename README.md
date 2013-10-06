@@ -6,7 +6,7 @@ A transcompiler is built which [parses](https://github.com/tsphp/tsphp-parser "P
 You can find the latest [demo application](http://tsphp.tutteli.ch/jenkins/job/TSPHP_dev/lastSuccessfulBuild/) on the build server.  
 
 Please visit the [project's website](http://tsphp.tutteli.ch/) for more information on the project.  
-Use the project's [issue tracking](http://tsphp.tutteli.ch/jira) system (JIRA) to report bugs or submit feature requests.
+Use the project's [issue tracking system](http://tsphp.tutteli.ch/jira) (JIRA) to report bugs or submit feature requests.
 
 <br/>
 
