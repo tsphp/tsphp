@@ -5,7 +5,8 @@ This project aims to provide you a type-safe variant of PHP, namely TSPHP.
 A transcompiler is built which [parses](https://github.com/tsphp/tsphp-parser "Parser component") your tsphp code, [type checks](https://github.com/tsphp/tsphp-typechecker "type checker component") it to ensure type safety and finally [translates](https://github.com/tsphp/tsphp-translators-php54 "translator component") it to PHP.
 You can find the latest [demo application](http://tsphp.tutteli.ch/jenkins/job/TSPHP_dev/lastSuccessfulBuild/) on the build server.  
 
-Please visit the official [wiki](http://tsphp.tutteli.ch/wiki) for more information on the project.
+Please visit the [project's website](http://tsphp.tutteli.ch/) for more information on the project.  
+Use the project's [issue tracking](http://tsphp.tutteli.ch/jira) system (JIRA) to report bugs or submit feature requests.
 
 <br/>
 
