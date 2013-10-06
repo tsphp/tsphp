@@ -417,7 +417,7 @@
         <attribute name="file"/>
         <attribute name="dir"/>
         <sequential>
-            <delete file="@{dir}/@{file}${pmd.config}/pmd_tsphp.xml"/>
+            <delete file="@{dir}/@{file}"/>
             <copy file="@{dir}/@{file}.tpl" tofile="@{dir}/@{file}">
                 <filterset>
                     <filter token="DIR" value="@{dir}"/>
