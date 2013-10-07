@@ -27,16 +27,15 @@ public class Compiler implements ICompiler
 {
 
     private final ITSPHPAstAdaptor astAdaptor;
-    private IParser parser;
-    private ITypeChecker typeChecker;
-    private ExecutorService executorService;
-    private int numberOfWorkers;
+    private final IParser parser;
+    private final ITypeChecker typeChecker;
+    private final ExecutorService executorService;
     //
-    private Collection<ICompilerListener> compilerListeners = new ArrayDeque<>();
-    private Collection<ITranslatorFactory> translatorFactories;
+    private final Collection<ICompilerListener> compilerListeners = new ArrayDeque<>();
+    private final Collection<ITranslatorFactory> translatorFactories;
     //
     private Collection<CompilationUnitDto> compilationUnits = new ArrayDeque<>();
-    private Collection<IErrorLogger> errorLoggers = new ArrayDeque<>();
+    private final Collection<IErrorLogger> errorLoggers = new ArrayDeque<>();
     private boolean isCompiling = false;
     private boolean needReset = false;
     private boolean hasFoundError = false;
@@ -46,11 +45,10 @@ public class Compiler implements ICompiler
     private Collection<Future> tasks = new ArrayDeque<>();
 
     public Compiler(ITSPHPAstAdaptor theAstAdaptor, IParser theParser, ITypeChecker theTypeChecker,
-            Collection<ITranslatorFactory> theTranslatorFactories, int aNumberOfWorkers) {
+            Collection<ITranslatorFactory> theTranslatorFactories, int numberOfWorkers) {
         astAdaptor = theAstAdaptor;
         typeChecker = theTypeChecker;
         parser = theParser;
-        numberOfWorkers = aNumberOfWorkers;
         translatorFactories = theTranslatorFactories;
         executorService = Executors.newFixedThreadPool(numberOfWorkers);
 
@@ -186,7 +184,6 @@ public class Compiler implements ICompiler
 
     @Override
     public void addFile(final String pathToFileInclFileName) throws IOException {
-
         add(new ParseAndDefinitionPhaseRunner(pathToFileInclFileName, new IParserMethod()
         {
             @Override
@@ -385,8 +382,8 @@ public class Compiler implements ICompiler
     private class ParseAndDefinitionPhaseRunner implements Runnable
     {
 
-        private IParserMethod parserMethod;
-        private String id;
+        private final IParserMethod parserMethod;
+        private final String id;
 
         public ParseAndDefinitionPhaseRunner(String theId, IParserMethod aParserMethod) {
             parserMethod = aParserMethod;
@@ -413,7 +410,7 @@ public class Compiler implements ICompiler
     private class ReferencePhaseRunner implements Runnable
     {
 
-        private CompilationUnitDto dto;
+        private final CompilationUnitDto dto;
 
         ReferencePhaseRunner(CompilationUnitDto aDto) {
             dto = aDto;
@@ -432,7 +429,7 @@ public class Compiler implements ICompiler
     private class TypeCheckRunner implements Runnable
     {
 
-        private CompilationUnitDto dto;
+        private final CompilationUnitDto dto;
 
         TypeCheckRunner(CompilationUnitDto aDto) {
             dto = aDto;

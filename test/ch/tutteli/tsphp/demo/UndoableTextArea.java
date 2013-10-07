@@ -26,7 +26,7 @@ class UndoableTextArea extends JTextArea implements UndoableEditListener, FocusL
     private UndoManager m_undoManager;
 
     public UndoableTextArea() {
-        this(new String());
+        this("");
     }
 
     public UndoableTextArea(String text) {
@@ -36,23 +36,23 @@ class UndoableTextArea extends JTextArea implements UndoableEditListener, FocusL
         this.addFocusListener(this);
     }
 
-    private void createUndoMananger() {
+    private void createUndoManager() {
         m_undoManager = new UndoManager();
         m_undoManager.setLimit(10);
     }
 
-    private void removeUndoMananger() {
+    private void removeUndoManager() {
         m_undoManager.end();
     }
 
     @Override
     public void focusGained(FocusEvent fe) {
-        createUndoMananger();
+        createUndoManager();
     }
 
     @Override
     public void focusLost(FocusEvent fe) {
-        removeUndoMananger();
+        removeUndoManager();
     }
 
     @Override

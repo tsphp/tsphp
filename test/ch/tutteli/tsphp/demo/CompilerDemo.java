@@ -19,7 +19,7 @@ import org.antlr.runtime.RecognitionException;
 public class CompilerDemo extends javax.swing.JFrame implements ICompilerListener, IErrorLogger
 {
 
-    private ICompiler compiler;
+    private final ICompiler compiler;
 
     /**
      * Creates new form CompilerDemo
@@ -90,9 +90,6 @@ public class CompilerDemo extends javax.swing.JFrame implements ICompilerListene
         txtTSPHP.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         txtTSPHP.setRows(5);
         txtTSPHP.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                txtTSPHPKeyPressed(evt);
-            }
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 txtTSPHPKeyReleased(evt);
             }
@@ -114,9 +111,6 @@ public class CompilerDemo extends javax.swing.JFrame implements ICompilerListene
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void txtTSPHPKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtTSPHPKeyPressed
-    }//GEN-LAST:event_txtTSPHPKeyPressed
 
     private void txtTSPHPKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtTSPHPKeyReleased
         if (evt.getKeyCode() == KeyEvent.VK_G && ((evt.getModifiers() & KeyEvent.CTRL_MASK) != 0)) {

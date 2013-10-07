@@ -6,7 +6,7 @@ import java.io.IOException;
 public class ConsoleReader implements IConsoleReader
 {
 
-    private ICompiler compilerController;
+    private final ICompiler compilerController;
 
     public ConsoleReader(ICompiler controller) {
         compilerController = controller;

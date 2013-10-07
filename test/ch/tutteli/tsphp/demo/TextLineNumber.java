@@ -27,7 +27,7 @@ public class TextLineNumber extends JPanel
     private final static Border OUTER = new MatteBorder(0, 0, 0, 2, Color.GRAY);
     private final static int HEIGHT = Integer.MAX_VALUE - 1000000;
     //  Text component this TextTextLineNumber component is in sync with
-    private JTextComponent component;
+    private final JTextComponent component;
     //  Properties that can be changed
     private boolean updateFont;
     private int borderGap;
@@ -147,8 +147,6 @@ public class TextLineNumber extends JPanel
      * <li>TextLineNumber.CENTER
      * <li>TextLineNumber.RIGHT (default)
      * </ul>
-     *
-     * @param currentLineForeground the Color used to render the current line
      */
     public void setDigitAlignment(float digitAlignment) {
         this.digitAlignment =
@@ -301,7 +299,7 @@ public class TextLineNumber extends JPanel
         } else // We need to check all the attributes for font changes
         {
             if (fonts == null) {
-                fonts = new HashMap<String, FontMetrics>();
+                fonts = new HashMap<>();
             }
 
             Element root = component.getDocument().getDefaultRootElement();
