@@ -408,7 +408,7 @@
                 <fileset dir="${lib}" includes="@{includes}"/>
             </delete>
             <copy todir="${lib}">
-                <fileset dir=" @{dir}" includes="@{includes}"/>
+                <fileset dir="@{dir}" includes="@{includes}"/>
             </copy>
         </sequential>
     </macrodef>
