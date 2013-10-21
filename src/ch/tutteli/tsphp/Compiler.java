@@ -56,8 +56,8 @@ public class Compiler implements ICompiler
     }
 
     private void init() {
-        parser.addErrorLogger(this);
-        typeChecker.addErrorLogger(this);
+        parser.registerErrorLogger(this);
+        typeChecker.registerErrorLogger(this);
     }
 
     @Override
@@ -78,7 +78,7 @@ public class Compiler implements ICompiler
     }
 
     @Override
-    public void addErrorLogger(IErrorLogger errorLogger) {
+    public void registerErrorLogger(IErrorLogger errorLogger) {
         errorLoggers.add(errorLogger);
     }
 
@@ -461,7 +461,7 @@ public class Compiler implements ICompiler
             try {
                 dto.treeNodeStream.reset();
                 ITranslator translator = translatorFactory.build();
-                translator.addErrorLogger(Compiler.this);
+                translator.registerErrorLogger(Compiler.this);
                 String translation = translator.translate(dto.treeNodeStream);
                 translations.put(dto.id, translation);
             } catch (Exception ex) {

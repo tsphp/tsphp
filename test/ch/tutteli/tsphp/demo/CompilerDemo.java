@@ -36,7 +36,7 @@ public class CompilerDemo extends javax.swing.JFrame implements ICompilerListene
 
         compiler = new HardCodedCompilerInitialiser().create();
         compiler.registerCompilerListener(this);
-        compiler.addErrorLogger(this);
+        compiler.registerErrorLogger(this);
     }
 
     /**
