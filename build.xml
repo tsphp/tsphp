@@ -1,7 +1,12 @@
 <project name="TSPHP" default="build" basedir=".">
 
-    <property environment="env" />
-    <import file="${basedir}/build-common.xml" as="common"/>
+    <property environment="env"/>
+    <import file="${basedir}/ant/build-common.xml" as="common"/>
+    <import file="${basedir}/ant/copyCommon.xml" as="copyCommon"/>
+
+    <property name="parser.jar" location="${basedir}/../TSPHP-parser/build/lib"/>
+    <property name="typechecker.jar" location="${basedir}/../TSPHP-typechecker/build/lib"/>
+    <property name="translator.jar" location="${basedir}/../TSPHP-translators-php54/build/lib"/>
 
     <!-- ================================================================== -->
     <!-- Specialised Target: dist -->
@@ -11,27 +16,27 @@
             description="create distributions">
         <zip destfile="${target}/dist/${distname}-demo.zip">
             <zipfileset dir="${basedir}" prefix="${distname}">
-                <include name="README.md" />
-                <include name="LICENSE" />
+                <include name="README.md"/>
+                <include name="LICENSE"/>
             </zipfileset>
             <zipfileset dir="${target}/demo" prefix="${distname}">
-                <include name="**/*" />
+                <include name="**/*"/>
             </zipfileset>
         </zip>
     </target>
 
     <target name="demo" depends="clean, jar" description="complete build">
-        <mkdir dir="${target}/demo" />
-        <mkdir dir="${target}/demo/bin" />
+        <mkdir dir="${target}/demo"/>
+        <mkdir dir="${target}/demo/bin"/>
         <copy todir="${target}/demo/bin" flatten="true">
             <fileset dir="${lib}">
-                <include name="*.jar" />
+                <include name="*.jar"/>
             </fileset>
             <fileset dir="${target}/lib">
-                <include name="*.jar" />
+                <include name="*.jar"/>
             </fileset>
             <fileset dir="${src.test}">
-                <include name="**/*.png" />
+                <include name="**/*.png"/>
             </fileset>
         </copy>
 
@@ -39,41 +44,36 @@
         <getFilesAsPath property="jarclasspath"
                         file="${target}/demo/Start Demo.bat" refbasedir="${target}/demo" separator=" ">
             <fileset dir="${target}/demo/bin">
-                <include name="*.jar" />
+                <include name="*.jar"/>
             </fileset>
         </getFilesAsPath>
 
         <jar jarfile="${target}/demo/${distname}-demo.jar" basedir="${test-classes}" excludes="**/test/*">
             <manifest>
-                <attribute name="Implementation-Title" value="${proj.name} - demo" />
-                <attribute name="Implementation-Version" value="${proj.version}" />
-                <attribute name="Implementation-Vendor" value="" />
-                <attribute name="Implementation-User" value="${proj.autor}" />
-                <attribute name="Built-By" value="${proj.autor}" />
-                <attribute name="Sealed" value="false" />
-                <attribute name="Main-Class" value="ch.tutteli.tsphp.demo.CompilerDemo" />
+                <attribute name="Implementation-Title" value="${proj.name} - demo"/>
+                <attribute name="Implementation-Version" value="${proj.version}"/>
+                <attribute name="Implementation-Vendor" value=""/>
+                <attribute name="Implementation-User" value="${proj.autor}"/>
+                <attribute name="Built-By" value="${proj.autor}"/>
+                <attribute name="Sealed" value="false"/>
+                <attribute name="Main-Class" value="ch.tutteli.tsphp.demo.CompilerDemo"/>
                 <attribute name="Class-Path" value="${jarclasspath}"/>
             </manifest>
         </jar>
         <property name="batclasspath" value=""/>
         <getFilesAsPath property="batclasspath" file="${target}/demo/Start Demo.bat" refbasedir="${target}/demo">
             <fileset dir="${target}/demo/bin">
-                <include name="*.jar" />
+                <include name="*.jar"/>
             </fileset>
         </getFilesAsPath>
-        <echo  file="${target}/demo/Start Demo.bat"
-               message="java -cp ./${distname}-demo.jar${batclasspath} ch.tutteli.tsphp.demo.CompilerDemo"/>
+        <echo file="${target}/demo/Start Demo.bat"
+              message="java -cp ./${distname}-demo.jar${batclasspath} ch.tutteli.tsphp.demo.CompilerDemo"/>
 
-        <echo  file="${target}/demo/Start Demo.bat" append="true" message=" "/>
+        <echo file="${target}/demo/Start Demo.bat" append="true" message=" "/>
     </target>
 
-    <property name="common.jar" location="${basedir}/../TSPHP-common/build/lib"/>
-    <property name="parser.jar" location="${basedir}/../TSPHP-parser/build/lib"/>
-    <property name="typechecker.jar" location="${basedir}/../TSPHP-typechecker/build/lib"/>
-    <property name="translator.jar" location="${basedir}/../TSPHP-translators-php54/build/lib"/>
-
     <target name="copyAllComponents"
-            depends="copyTranslator, copyTypeChecker, copyParser, copyCommon"
+            depends="copyTranslator, copyTypeChecker, copyParser, copyCommon.do"
             description="copy common, parser and typechecker to the lib folder">
     </target>
 

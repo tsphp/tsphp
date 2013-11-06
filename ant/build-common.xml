@@ -4,10 +4,10 @@
  * Original file was released under Apache License 2.0 as well
  *
 -->
-<project name="build-common" basedir="." xmlns:jacoco="antlib:org.jacoco.ant">
+<project name="bc" basedir="../" xmlns:jacoco="antlib:org.jacoco.ant">
 
     <!-- import project properties !-->
-    <property file="${basedir}/build.properties"/>
+    <property file="${basedir}/ant/build.properties"/>
 
     <!-- setting general properties -->
     <property name="proj.java.version" value="1.7"/>
@@ -16,10 +16,8 @@
     <property name="lib" location="${basedir}/lib"/>
     <property name="libdev" location="${lib}/dev"/>
     <property name="src" location="${basedir}/src"/>
-    <property name="src.antlr" location="${basedir}/antlr"/>
     <property name="src.main" location="${src}"/>
     <property name="src.test" location="${basedir}/test"/>
-    <property name="common.jar" location="${basedir}/../TSPHP-common/build/lib"/>
 
     <!-- setting target locations -->
     <property name="target" location="${basedir}/build"/>
@@ -99,7 +97,6 @@
     <!-- ================================================================== -->
     <!-- Target: compile -->
     <!-- ================================================================== -->
-
     <target name="compile" depends="init, compile.prod, compile.properties, compile.test"
             description="compile the source and tests ">
     </target>
@@ -126,7 +123,6 @@
     </target>
 
     <target name="compile.test">
-
         <javac srcdir="${src.test}"
                destdir="${test-classes}"
                source="${proj.java.version}"
@@ -161,7 +157,6 @@
     <!-- ================================================================== -->
     <target name="build" depends="jar, test" description="complete build">
     </target>
-
 
     <!-- ================================================================== -->
     <!-- Target: run -->
@@ -206,7 +201,6 @@
             </zipfileset>
             <zipfileset dir="${javadoc}" prefix="${distname}/doc">
                 <include name="**/*.*"/>
-                <exclude name="javadoc.zip"/>
             </zipfileset>
         </zip>
         <zip destfile="${target}/dist/${distname}-src.zip">
@@ -231,7 +225,7 @@
         <mkdir dir="${junit}"/>
         <mkdir dir="${coverage}"/>
         <touch file="${coverage.data}"/>
-        <jacoco:agent property="test.vm.param" destfile="${coverage.data}" excludes="**/ch/tutteli/tsphp/Main.class"/>
+        <jacoco:agent property="test.vm.param" destfile="${coverage.data}" excludes="${coverage.excludes.agent}"/>
         <junit printsummary="off"
                haltonfailure="false"
                fork="true"
@@ -263,8 +257,7 @@
         <mkdir dir="${junit.unit}"/>
         <mkdir dir="${coverage.unit}"/>
         <touch file="${coverage.unit.data}"/>
-        <jacoco:agent property="test.vm.param" destfile="${coverage.unit.data}"
-                      excludes="**/ch/tutteli/tsphp/Main.class"/>
+        <jacoco:agent property="test.vm.param" destfile="${coverage.unit.data}" excludes="${coverage.excludes.agent}"/>
         <junit printsummary="off"
                haltonfailure="false"
                fork="true"
@@ -288,7 +281,6 @@
         <coverage.report dir="${coverage.unit}" executiondata="${coverage.unit.data}"/>
         <fail message="JUnit tests FAILED!" if="test.failed"/>
     </target>
-
 
     <!-- ================================================================== -->
     <!-- Target: reports -->
@@ -395,9 +387,6 @@
         </javadoc>
     </target>
 
-    <target name="copyCommon" depends="" description="copy common library to the lib folder">
-        <copyComponent dir="${common.jar}" includes="TSPHP-common-*.jar"/>
-    </target>
 
     <!-- ****************************************************************** -->
     <!-- * MACROS  -->
@@ -431,7 +420,7 @@
                 </executiondata>
                 <structure name="${distname}">
                     <classfiles>
-                        <fileset dir="${classes}" excludes="**/ch/tutteli/tsphp/Main.class"/>
+                        <fileset dir="${classes}" excludes="${coverage.excludes}"/>
                     </classfiles>
                     <sourcefiles encoding="UTF-8">
                         <fileset dir="${src.main}"/>

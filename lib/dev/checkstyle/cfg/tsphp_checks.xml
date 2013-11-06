@@ -202,7 +202,9 @@ Following adoptions are apliead to the original file from checkstyle:
 		<module name="FallThrough">
 			<property name="severity" value="warning"/>
 		</module>
-        <module name="RedundantThrows"/>
+        <module name="RedundantThrows">
+			<property name="severity" value="warning"/>
+		</module>
 		<module name="BooleanExpressionComplexity"/>
         <module name="SimplifyBooleanExpression"/>
         <module name="SimplifyBooleanReturn"/>

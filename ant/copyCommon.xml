@@ -1,0 +1,11 @@
+<project name="copyCommon" basedir="../">
+
+    <import file="${basedir}/ant/build-common.xml" as="common"/>
+
+    <property name="common.jar" location="${basedir}/../TSPHP-common/build/lib"/>
+
+    <target name="do" depends="" description="copy common library to the lib folder">
+        <copyComponent dir="${common.jar}" includes="TSPHP-common-*.jar"/>
+    </target>
+
+</project>
