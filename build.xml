@@ -1,8 +1,8 @@
-<project name="TSPHP" default="build" basedir=".">
+<project name="TSPHP" default="common.build" basedir=".">
 
     <property environment="env"/>
     <import file="${basedir}/ant/build-common.xml" as="common"/>
-    <import file="${basedir}/ant/copyCommon.xml" as="copyCommon"/>
+    <import file="${basedir}/ant/copyCommon.xml" as="cp"/>
 
     <property name="parser.jar" location="${basedir}/../TSPHP-parser/build/lib"/>
     <property name="typechecker.jar" location="${basedir}/../TSPHP-typechecker/build/lib"/>
@@ -72,20 +72,20 @@
         <echo file="${target}/demo/Start Demo.bat" append="true" message=" "/>
     </target>
 
-    <target name="copyAllComponents"
-            depends="copyTranslator, copyTypeChecker, copyParser, copyCommon.do"
+    <target name="cp.all"
+            depends="cp.translator, cp.typechecker, cp.parser, cp.common"
             description="copy common, parser and typechecker to the lib folder">
     </target>
 
-    <target name="copyTranslator" depends="" description="copy the translator jar to the lib folder">
+    <target name="cp.translator" depends="" description="copy the translator jar to the lib folder">
         <copyComponent dir="${translator.jar}" includes="TSPHP-translators-*.jar"/>
     </target>
 
-    <target name="copyTypeChecker" depends="" description="copy typechecker jar to the lib folder">
+    <target name="cp.typechecker" depends="" description="copy typechecker jar to the lib folder">
         <copyComponent dir="${typechecker.jar}" includes="TSPHP-typechecker-*.jar"/>
     </target>
 
-    <target name="copyParser" depends="" description="copy parser jar to the lib folder">
+    <target name="cp.parser" depends="" description="copy parser jar to the lib folder">
         <copyComponent dir="${parser.jar}" includes="TSPHP-parser-*.jar"/>
     </target>
 
