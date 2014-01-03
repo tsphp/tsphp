@@ -181,11 +181,9 @@
 
     <!-- ================================================================== -->
     <!-- Target: dist -->
-    <!-- Hinweis: Spezielle Reihenfolge, damit QS-Reports auch erstellt -->
-    <!--          werden, wenn Fehler vorhanden sind (compile, test etc.) -->
     <!-- ================================================================== -->
     <target name="dist"
-            depends="clean, report, jar, build, findbugs"
+            depends="clean, checkstyle, pmd, cpd, javadoc, jar, build, findbugs, QAreport"
             description="create distributions">
         <mkdir dir="${target}/dist"/>
         <zip destfile="${target}/dist/${distname}-bin.zip">
@@ -283,11 +281,21 @@
     </target>
 
     <!-- ================================================================== -->
-    <!-- Target: reports -->
+    <!-- Target: QA -->
     <!-- ================================================================== -->
-    <target name="report"
-            depends="checkstyle, pmd, cpd, javadoc"
+    <target name="QA"
+            depends="jar, checkstyle, pmd, cpd, findbugs, QAreport"
             description="complete reports">
+    </target>
+    
+    <!-- ================================================================== -->
+    <!-- Target: QA report -->
+    <!-- ================================================================== -->
+    <target name="QAreport" description="QA report">
+        <replaceReportProperty dir="${libdev}" file="QA.html" token="PROJ_NAME" tokenValue="${proj.name}"/>
+        <copy todir="${target}">
+            <fileset dir="${libdev}" includes="QA.html"/>
+        </copy>
     </target>
 
     <!-- ================================================================== -->
@@ -347,7 +355,7 @@
     <!-- ================================================================== -->
     <!-- Target: findbugs -->
     <!-- ================================================================== -->
-    <target name="findbugs" depends="init">
+    <target name="findbugs" depends="init" description="findbugs report">
         <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpathref="libsetdev"/>
         <mkdir dir="${findbugs}"/>
         <findbugs home="${libdev}/findbugs"
@@ -448,11 +456,13 @@
     <macrodef name="replaceReportProperty">
         <attribute name="file"/>
         <attribute name="dir"/>
+        <attribute name="token" default="DIR"/>
+        <attribute name="tokenValue" default="@{dir}"/>
         <sequential>
             <delete file="@{dir}/@{file}"/>
             <copy file="@{dir}/@{file}.tpl" tofile="@{dir}/@{file}">
                 <filterset>
-                    <filter token="DIR" value="@{dir}"/>
+                    <filter token="@{token}" value="@{tokenValue}"/>
                 </filterset>
             </copy>
             <replace file="@{dir}/@{file}" token="\" value="/"/>

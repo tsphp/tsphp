@@ -4,3 +4,6 @@ nbproject/*
 out/*
 *.iml
 antlr/output/*
+/lib/dev/checkstyle/cfg/checkstyle.properties
+/lib/dev/pmd/cfg/pmd_tsphp.xml
+/lib/dev/QA.html
