@@ -1,10 +1,10 @@
-package ch.tutteli.tsphp.demo;
+package ch.tsphp.demo;
 
-import ch.tutteli.tsphp.HardCodedCompilerInitialiser;
-import ch.tutteli.tsphp.common.ICompiler;
-import ch.tutteli.tsphp.common.ICompilerListener;
-import ch.tutteli.tsphp.common.IErrorLogger;
-import ch.tutteli.tsphp.common.exceptions.TSPHPException;
+import ch.tsphp.HardCodedCompilerInitialiser;
+import ch.tsphp.common.ICompiler;
+import ch.tsphp.common.ICompilerListener;
+import ch.tsphp.common.IErrorLogger;
+import ch.tsphp.common.exceptions.TSPHPException;
 import java.awt.event.KeyEvent;
 import java.io.PrintWriter;
 import java.io.StringWriter;

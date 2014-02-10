@@ -2,7 +2,7 @@
 
     <import file="${basedir}/ant/build-common.xml" as="common"/>
 
-    <property name="common.jar" location="${basedir}/../TSPHP-common/build/lib"/>
+    <property name="common.jar" location="${basedir}/../tsphp-common/build/lib"/>
 
     <target name="common" depends="" description="copy common library to the lib folder">
         <copyComponent dir="${common.jar}" includes="TSPHP-common-*.jar"/>

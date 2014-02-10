@@ -2,7 +2,7 @@
  * Source code copied from http://www.java2s.com/Code/Java/Swing-JFC/CreatingTextAreawithUndoRedoCapabilities.htm
  * 
  */
-package ch.tutteli.tsphp.demo;
+package ch.tsphp.demo;
 
 import java.awt.Toolkit;
 import java.awt.event.FocusEvent;

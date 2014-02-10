@@ -1,12 +1,14 @@
-package ch.tutteli.tsphp;
+package ch.tsphp;
 
-import ch.tutteli.tsphp.common.ICompiler;
-import ch.tutteli.tsphp.common.ITSPHPAstAdaptor;
-import ch.tutteli.tsphp.common.ITranslatorFactory;
-import ch.tutteli.tsphp.common.TSPHPAstAdaptor;
-import ch.tutteli.tsphp.parser.ParserFacade;
-import ch.tutteli.tsphp.translators.php54.PHP54TranslatorFactory;
-import ch.tutteli.tsphp.typechecker.TypeChecker;
+import ch.tsphp.common.ICompiler;
+import ch.tsphp.common.ITSPHPAstAdaptor;
+import ch.tsphp.common.ITranslatorFactory;
+import ch.tsphp.common.TSPHPAstAdaptor;
+import ch.tsphp.parser.ParserFacade;
+import ch.tsphp.translators.php54.PHP54TranslatorFactory;
+import ch.tsphp.typechecker.TypeChecker;
+
+import java.lang.*;
 import java.util.ArrayDeque;
 import java.util.Collection;
 

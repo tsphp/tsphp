@@ -1,4 +1,4 @@
-package ch.tutteli.tsphp.demo;
+package ch.tsphp.demo;
 
 import java.awt.*;
 import java.beans.*;

@@ -1,6 +1,6 @@
-package ch.tutteli.tsphp.console;
+package ch.tsphp.console;
 
-import ch.tutteli.tsphp.common.ICompiler;
+import ch.tsphp.common.ICompiler;
 import java.io.IOException;
 
 public class ConsoleReader implements IConsoleReader

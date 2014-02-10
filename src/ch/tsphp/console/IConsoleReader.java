@@ -1,4 +1,4 @@
-package ch.tutteli.tsphp.console;
+package ch.tsphp.console;
 
 interface IConsoleReader
 {

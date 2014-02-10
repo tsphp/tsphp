@@ -1,4 +1,4 @@
-package ch.tutteli.tsphp.exceptions;
+package ch.tsphp.exceptions;
 
 public class CompilerException extends RuntimeException
 {

@@ -48,7 +48,7 @@
             </fileset>
         </getFilesAsPath>
 
-        <jar jarfile="${target}/demo/${distname}-demo.jar" basedir="${test-classes}" excludes="**/test/*">
+        <jar jarfile="${target}/demo/${distname}-demo.jar" basedir="${test-classes}" excludes="**/test/*, **/test/">
             <manifest>
                 <attribute name="Implementation-Title" value="${proj.name} - demo"/>
                 <attribute name="Implementation-Version" value="${proj.version}"/>
@@ -56,7 +56,7 @@
                 <attribute name="Implementation-User" value="${proj.autor}"/>
                 <attribute name="Built-By" value="${proj.autor}"/>
                 <attribute name="Sealed" value="false"/>
-                <attribute name="Main-Class" value="ch.tutteli.tsphp.demo.CompilerDemo"/>
+                <attribute name="Main-Class" value="ch.tsphp.demo.CompilerDemo"/>
                 <attribute name="Class-Path" value="${jarclasspath}"/>
             </manifest>
         </jar>
@@ -67,7 +67,7 @@
             </fileset>
         </getFilesAsPath>
         <echo file="${target}/demo/Start Demo.bat"
-              message="java -cp ./${distname}-demo.jar${batclasspath} ch.tutteli.tsphp.demo.CompilerDemo"/>
+              message="java -cp ./${distname}-demo.jar${batclasspath} ch.tsphp.demo.CompilerDemo"/>
 
         <echo file="${target}/demo/Start Demo.bat" append="true" message=" "/>
     </target>

@@ -1,6 +1,6 @@
-package ch.tutteli.tsphp.console;
+package ch.tsphp.console;
 
-import ch.tutteli.tsphp.HardCodedCompilerInitialiser;
+import ch.tsphp.HardCodedCompilerInitialiser;
 
 public final class Main
 {

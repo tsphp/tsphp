@@ -1,6 +1,6 @@
-package ch.tutteli.tsphp;
+package ch.tsphp;
 
-import ch.tutteli.tsphp.common.ICompiler;
+import ch.tsphp.common.ICompiler;
 
 public interface ICompilerInitialiser
 {
