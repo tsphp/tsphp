@@ -18,6 +18,8 @@ import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import org.antlr.runtime.CommonTokenStream;
 import org.junit.Assert;
@@ -137,7 +139,7 @@ public class CompilerTest
                 spyParser,
                 new TypeChecker(),
                 translatorFactories,
-                1);
+                Executors.newSingleThreadExecutor());
         return compiler;
     }
 }

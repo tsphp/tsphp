@@ -44,13 +44,18 @@ public class Compiler implements ICompiler
     private Map<String, String> translations = new HashMap<>();
     private Collection<Future> tasks = new ArrayDeque<>();
 
-    public Compiler(ITSPHPAstAdaptor theAstAdaptor, IParser theParser, ITypeChecker theTypeChecker,
-            Collection<ITranslatorFactory> theTranslatorFactories, int numberOfWorkers) {
+    public Compiler(
+            ITSPHPAstAdaptor theAstAdaptor,
+            IParser theParser,
+            ITypeChecker theTypeChecker,
+            Collection<ITranslatorFactory> theTranslatorFactories,
+            ExecutorService theExecutorService) {
+
         astAdaptor = theAstAdaptor;
         typeChecker = theTypeChecker;
         parser = theParser;
         translatorFactories = theTranslatorFactories;
-        executorService = Executors.newFixedThreadPool(numberOfWorkers);
+        executorService = theExecutorService;
 
         init();
     }
@@ -102,11 +107,11 @@ public class Compiler implements ICompiler
     }
 
     private void add(ParseAndDefinitionPhaseRunner runner) {
-        boolean doesNotNetReset;
+        boolean doesNotNeedReset;
         synchronized (lock) {
-            doesNotNetReset = !needReset;
+            doesNotNeedReset = !needReset;
         }
-        if (doesNotNetReset) {
+        if (doesNotNeedReset) {
             tasks.add(executorService.submit(runner));
         } else {
             throw new CompilerException("Tried to parse after calling compile(). If compilation was finished "

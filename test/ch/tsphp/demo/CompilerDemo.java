@@ -11,6 +11,7 @@ import java.io.StringWriter;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Map;
+import java.util.concurrent.Executors;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -35,7 +36,7 @@ public class CompilerDemo extends javax.swing.JFrame implements ICompilerListene
         TextLineNumber tln = new TextLineNumber(txtTSPHP);
         scrollTSPHP.setRowHeaderView(tln);
 
-        compiler = new HardCodedCompilerInitialiser().create();
+        compiler = new HardCodedCompilerInitialiser().create(Executors.newSingleThreadExecutor());
         compiler.registerCompilerListener(this);
         compiler.registerErrorLogger(this);
     }
