@@ -46,6 +46,7 @@
         <fileset dir="${lib}">
             <include name="*.jar"/>
         </fileset>
+        <pathelement path="${libset.addon}"/>
     </path>
 
     <!-- define build-time libraries (simplified)-->
@@ -183,9 +184,15 @@
     <!-- Target: dist -->
     <!-- ================================================================== -->
     <target name="dist"
-            depends="clean, checkstyle, pmd, cpd, javadoc, jar, build, findbugs, QAreport"
+            depends="clean, checkstyle, pmd, cpd, javadoc, build, findbugs, QAreport,
+            dist.prepare, dist.bin, dist.src"
             description="create distributions">
+    </target>
+    <target name="dist.prepare">
         <mkdir dir="${target}/dist"/>
+    </target>
+
+    <target name="dist.bin">
         <zip destfile="${target}/dist/${distname}-bin.zip">
             <zipfileset dir="${basedir}" prefix="${distname}">
                 <include name="README.md"/>
@@ -201,6 +208,9 @@
                 <include name="**/*.*"/>
             </zipfileset>
         </zip>
+    </target>
+
+    <target name="dist.src">
         <zip destfile="${target}/dist/${distname}-src.zip">
             <zipfileset dir="${basedir}" prefix="${distname}">
                 <include name="**/*"/>
@@ -212,6 +222,8 @@
                 <exclude name="*.iml"/>
                 <exclude name="pom.xml"/>
                 <exclude name="*.jenkins"/>
+                <exclude name="atlassian-ide-plugin.xml"/>
+                <exclude name="personal-settings.xml"/>
             </zipfileset>
         </zip>
     </target>

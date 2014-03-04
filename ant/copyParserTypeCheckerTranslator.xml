@@ -1,0 +1,20 @@
+<project name="copyParserTypeCheckerTranslator" basedir="../">
+
+    <import file="${basedir}/ant/build-common.xml" as="common"/>
+
+    <property name="parser.jar" location="${basedir}/../TSPHP-parser/build/lib"/>
+    <property name="typechecker.jar" location="${basedir}/../TSPHP-typechecker/build/lib"/>
+    <property name="translator.jar" location="${basedir}/../TSPHP-translators-php54/build/lib"/>
+
+    <target name="translator" depends="" description="copy the translator jar to the lib folder">
+        <copyComponent dir="${translator.jar}" includes="TSPHP-translators-*.jar"/>
+    </target>
+
+    <target name="typechecker" depends="" description="copy typechecker jar to the lib folder">
+        <copyComponent dir="${typechecker.jar}" includes="TSPHP-typechecker-*.jar"/>
+    </target>
+
+    <target name="parser" depends="" description="copy parser jar to the lib folder">
+        <copyComponent dir="${parser.jar}" includes="TSPHP-parser-*.jar"/>
+    </target>
+</project>

@@ -3,10 +3,7 @@
     <property environment="env"/>
     <import file="${basedir}/ant/build-common.xml" as="common"/>
     <import file="${basedir}/ant/copyCommon.xml" as="cp"/>
-
-    <property name="parser.jar" location="${basedir}/../TSPHP-parser/build/lib"/>
-    <property name="typechecker.jar" location="${basedir}/../TSPHP-typechecker/build/lib"/>
-    <property name="translator.jar" location="${basedir}/../TSPHP-translators-php54/build/lib"/>
+    <import file="${basedir}/ant/copyParserTypeCheckerTranslator.xml" as="cp"/>
 
     <!-- ================================================================== -->
     <!-- Specialised Target: dist -->
@@ -76,17 +73,4 @@
             depends="cp.translator, cp.typechecker, cp.parser, cp.common"
             description="copy common, parser and typechecker to the lib folder">
     </target>
-
-    <target name="cp.translator" depends="" description="copy the translator jar to the lib folder">
-        <copyComponent dir="${translator.jar}" includes="TSPHP-translators-*.jar"/>
-    </target>
-
-    <target name="cp.typechecker" depends="" description="copy typechecker jar to the lib folder">
-        <copyComponent dir="${typechecker.jar}" includes="TSPHP-typechecker-*.jar"/>
-    </target>
-
-    <target name="cp.parser" depends="" description="copy parser jar to the lib folder">
-        <copyComponent dir="${parser.jar}" includes="TSPHP-parser-*.jar"/>
-    </target>
-
 </project>
