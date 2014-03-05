@@ -43,7 +43,9 @@ Following adoptions are apliead to the original file from checkstyle:
 
     <!-- Checks that a package-info.java file exists for each package.     -->
     <!-- See http://checkstyle.sf.net/config_javadoc.html#JavadocPackage -->
-    <module name="JavadocPackage"/>
+    <module name="JavadocPackage">
+        <property name="severity" value="info"/>
+    </module>
 
     <!-- Checks whether files end with a new line.                        -->
     <!-- See http://checkstyle.sf.net/config_misc.html#NewlineAtEndOfFile -->
@@ -169,7 +171,10 @@ Following adoptions are apliead to the original file from checkstyle:
         <!-- Checks for blocks. You know, those {}'s         -->
         <!-- See http://checkstyle.sf.net/config_blocks.html -->
         <module name="AvoidNestedBlocks"/>
-        <module name="EmptyBlock"/>
+        <module name="EmptyBlock">
+            <property name="option" value="text"/>
+			<property name="severity" value="warning"/>
+		</module>
         <module name="LeftCurly">
 			<property name="option" value="eol"/>
 			<property name="tokens" value="CTOR_DEF, LITERAL_CATCH, LITERAL_DO, LITERAL_ELSE, LITERAL_FINALLY, LITERAL_FOR, LITERAL_IF, LITERAL_SWITCH, LITERAL_SYNCHRONIZED, LITERAL_TRY, LITERAL_WHILE, METHOD_DEF"/>
@@ -181,15 +186,11 @@ Following adoptions are apliead to the original file from checkstyle:
         <module name="NeedBraces"/>
         <module name="RightCurly"/>
 
-
         <!-- Checks for common coding problems               -->
         <!-- See http://checkstyle.sf.net/config_coding.html -->
         <!-- <module name="AvoidInlineConditionals"/> -->
         <module name="DoubleCheckedLocking"/>    <!-- MY FAVOURITE -->
         <module name="EmptyStatement"/>
-		<module name="EmptyBlock">
-			<property name="severity" value="info"/>
-		</module>
         <module name="EqualsHashCode"/>
         <module name="HiddenField"/>
         <module name="IllegalInstantiation"/>
@@ -197,7 +198,7 @@ Following adoptions are apliead to the original file from checkstyle:
         <module name="MagicNumber"/>
         <module name="MissingSwitchDefault"/>
 		<module name="DefaultComesLast">
-			<property name="severity" value="info"/>
+			<property name="severity" value="warning"/>
 		</module>
 		<module name="FallThrough">
 			<property name="severity" value="warning"/>
