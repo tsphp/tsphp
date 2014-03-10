@@ -1,5 +1,11 @@
 <?xml version="1.0"?>
 
+<!--
+  This file is part of the TSPHP project published under the Apache License 2.0
+  For the full copyright and license information, please have a look at LICENSE in the
+  root folder or visit the project's website http://tsphp.ch/wiki/display/TSPHP/License
+  -->
+
 <!DOCTYPE suppressions PUBLIC
     "-//Puppy Crawl//DTD Suppressions 1.1//EN"
     "http://www.puppycrawl.com/dtds/suppressions_1_1.dtd">

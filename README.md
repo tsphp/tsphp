@@ -12,7 +12,7 @@ Use the project's [issue tracking system](http://tsphp.ch/jira) (JIRA) to report
 
 ---
 
-Copyright 2013 Robert Stoll <rstoll@tutteli.ch>
+Copyright 2014 Robert Stoll <rstoll@tutteli.ch>
 
 Licensed under the Apache License, Version 2.0 (the "License");  
 you may not use this file except in compliance with the License.  

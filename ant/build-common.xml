@@ -1,4 +1,10 @@
 <!--
+  This file is part of the TSPHP project published under the Apache License 2.0
+  For the full copyright and license information, please have a look at LICENSE in the
+  root folder or visit the project's website http://tsphp.ch/wiki/display/TSPHP/License
+  -->
+
+<!--
  * Modified version of build.xml created by
  * Roland Gisler, Hochschule Luzern Technik & Architektur, Switzerland
  * Original file was released under Apache License 2.0 as well
@@ -472,7 +478,7 @@
         <attribute name="tokenValue" default="@{dir}"/>
         <sequential>
             <delete file="@{dir}/@{file}"/>
-            <copy file="@{dir}/@{file}.tpl" tofile="@{dir}/@{file}">
+            <copy file="@{dir}/tpl.@{file}" tofile="@{dir}/@{file}">
                 <filterset>
                     <filter token="@{token}" value="@{tokenValue}"/>
                 </filterset>
