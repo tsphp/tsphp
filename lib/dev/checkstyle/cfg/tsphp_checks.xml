@@ -91,6 +91,7 @@ Following adoptions are applied to the original file from checkstyle:
             <property name="severity" value="warning"/>
 		</module>
         <!-- <module name="SuppressWarnings"/> -->
+         <module name="SuppressWarningsHolder" />
         
         
         <!-- Checks for blocks. You know, those {}'s         -->
@@ -353,7 +354,7 @@ Following adoptions are applied to the original file from checkstyle:
 		<property name="onCommentFormat" value="CHECKSTYLE\:ON\:([\w\|]+)"/>
 		<property name="checkFormat" value="$1"/>
 	</module>
-	
+	<module name="SuppressWarningsFilter" />
 	<module name="SuppressionFilter">
 		<property name="file" value="${suppressions.xml}"/>
 	</module>

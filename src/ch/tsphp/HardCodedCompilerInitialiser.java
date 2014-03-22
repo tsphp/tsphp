@@ -14,7 +14,6 @@ import ch.tsphp.parser.ParserFacade;
 import ch.tsphp.translators.php54.PHP54TranslatorFactory;
 import ch.tsphp.typechecker.TypeChecker;
 
-import java.lang.*;
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.concurrent.ExecutorService;
@@ -32,10 +31,10 @@ public class HardCodedCompilerInitialiser implements ICompilerInitialiser
 
     @Override
     public ICompiler create(final int numberOfWorkers) {
-       return create(Executors.newFixedThreadPool(numberOfWorkers));
+        return create(Executors.newFixedThreadPool(numberOfWorkers));
     }
 
-    public ICompiler create(ExecutorService executorService){
+    public ICompiler create(ExecutorService executorService) {
         Collection<ITranslatorFactory> translatorFactories = new ArrayDeque<>();
         translatorFactories.add(new PHP54TranslatorFactory());
 

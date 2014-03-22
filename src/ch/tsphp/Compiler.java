@@ -18,6 +18,8 @@ import ch.tsphp.common.ITypeChecker;
 import ch.tsphp.common.ParserUnitDto;
 import ch.tsphp.common.exceptions.TSPHPException;
 import ch.tsphp.exceptions.CompilerException;
+import org.antlr.runtime.tree.CommonTreeNodeStream;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayDeque;
@@ -25,9 +27,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import org.antlr.runtime.tree.CommonTreeNodeStream;
 
 public class Compiler implements ICompiler
 {
@@ -268,6 +268,7 @@ public class Compiler implements ICompiler
 
     }
 
+    @SuppressWarnings("checkstyle:illegalcatch")
     private void waitUntilExecutorFinished(final Runnable callback) {
         new Thread(new Runnable()
         {
@@ -402,6 +403,7 @@ public class Compiler implements ICompiler
         }
 
         @Override
+        @SuppressWarnings("checkstyle:illegalcatch")
         public void run() {
             try {
                 ParserUnitDto parserUnit = parserMethod.parser(parser);
@@ -428,6 +430,7 @@ public class Compiler implements ICompiler
         }
 
         @Override
+        @SuppressWarnings("checkstyle:illegalcatch")
         public void run() {
             try {
                 typeChecker.enrichWithReferences(dto.compilationUnit, dto.treeNodeStream);
@@ -447,6 +450,7 @@ public class Compiler implements ICompiler
         }
 
         @Override
+        @SuppressWarnings("checkstyle:illegalcatch")
         public void run() {
             try {
                 typeChecker.doTypeChecking(dto.compilationUnit, dto.treeNodeStream);
@@ -468,6 +472,7 @@ public class Compiler implements ICompiler
         }
 
         @Override
+        @SuppressWarnings("checkstyle:illegalcatch")
         public void run() {
             try {
                 dto.treeNodeStream.reset();
