@@ -170,25 +170,25 @@ public class Compiler implements ICompiler
     }
 
     @Override
-    public void addCompilationUnit(String id, final InputStream inputStream, final int size, final String encoding)
+    public void addCompilationUnit(String id, final InputStream inputStream, final int initialBufferSize, final String encoding)
             throws IOException {
         add(new ParseAndDefinitionPhaseRunner(id, new IParserMethod()
         {
             @Override
             public ParserUnitDto parser(IParser theParser) throws IOException {
-                return theParser.parseInputStream(inputStream, size, encoding);
+                return theParser.parseInputStream(inputStream, initialBufferSize, encoding);
             }
         }));
     }
 
     @Override
-    public void addCompilationUnit(String id, final InputStream inputStream, final int size, final int readBufferSize,
+    public void addCompilationUnit(String id, final InputStream inputStream, final int initialBufferSize, final int readBufferSize,
             final String encoding) throws IOException {
         add(new ParseAndDefinitionPhaseRunner(id, new IParserMethod()
         {
             @Override
             public ParserUnitDto parser(IParser theParser) throws IOException {
-                return theParser.parseInputStream(inputStream, size, readBufferSize, encoding);
+                return theParser.parseInputStream(inputStream, initialBufferSize, readBufferSize, encoding);
             }
         }));
     }
