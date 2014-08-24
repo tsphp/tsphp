@@ -12,24 +12,24 @@ import java.io.IOException;
 public class ConsoleReader implements IConsoleReader
 {
 
-    private final ICompiler compilerController;
+    private final ICompiler compiler;
 
-    public ConsoleReader(ICompiler controller) {
-        compilerController = controller;
+    public ConsoleReader(ICompiler theCompiler) {
+        compiler = theCompiler;
     }
 
     @Override
     public void readArguments(String[] args) {
         if (args.length > 0) {
             addFile(args[0]);
-            compilerController.compile();
+            compiler.compile();
         }
     }
 
     @Override
     public void addFile(String path) {
         try {
-            compilerController.addFile(path);
+            compiler.addFile(path);
         } catch (IOException ex) {
             ex.printStackTrace();
         }

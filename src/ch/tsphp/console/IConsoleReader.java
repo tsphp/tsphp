@@ -6,7 +6,7 @@
 
 package ch.tsphp.console;
 
-interface IConsoleReader
+public interface IConsoleReader
 {
 
     void readArguments(String[] args);
