@@ -36,16 +36,16 @@ public class Compiler implements ICompiler
     private final IParser parser;
     private final ITypeChecker typeChecker;
     private final ExecutorService executorService;
-    //
+
     private final Collection<ICompilerListener> compilerListeners = new ArrayDeque<>();
     private final Collection<ITranslatorFactory> translatorFactories;
-    //
+
     private Collection<CompilationUnitDto> compilationUnits = new ArrayDeque<>();
     private final Collection<IErrorLogger> errorLoggers = new ArrayDeque<>();
     private boolean isCompiling = false;
     private boolean needReset = false;
     private boolean hasFoundError = false;
-    //
+
     private final Object lock = new Object();
     private Map<String, String> translations = new HashMap<>();
     private Collection<Future> tasks = new ArrayDeque<>();
@@ -170,7 +170,8 @@ public class Compiler implements ICompiler
     }
 
     @Override
-    public void addCompilationUnit(String id, final InputStream inputStream, final int initialBufferSize, final String encoding)
+    public void addCompilationUnit(String id, final InputStream inputStream, final int initialBufferSize,
+            final String encoding)
             throws IOException {
         add(new ParseAndDefinitionPhaseRunner(id, new IParserMethod()
         {
@@ -182,7 +183,8 @@ public class Compiler implements ICompiler
     }
 
     @Override
-    public void addCompilationUnit(String id, final InputStream inputStream, final int initialBufferSize, final int readBufferSize,
+    public void addCompilationUnit(String id, final InputStream inputStream, final int initialBufferSize,
+            final int readBufferSize,
             final String encoding) throws IOException {
         add(new ParseAndDefinitionPhaseRunner(id, new IParserMethod()
         {
@@ -329,7 +331,7 @@ public class Compiler implements ICompiler
     private void doTranslation() {
         informTypeCheckingCompleted();
         if (!hasFoundError) {
-            if (translatorFactories != null) {
+            if (translatorFactories != null && translatorFactories.size() > 0) {
                 for (final ITranslatorFactory translatorFactory : translatorFactories) {
                     for (final CompilationUnitDto compilationUnit : compilationUnits) {
                         tasks.add(executorService.submit(new TranslatorRunner(translatorFactory, compilationUnit)));
