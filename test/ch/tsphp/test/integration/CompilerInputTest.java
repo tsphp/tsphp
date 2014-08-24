@@ -23,13 +23,13 @@ public class CompilerInputTest extends ACompilerTest
 {
 
     @Rule
-    public TemporaryFolder folder= new TemporaryFolder();
+    public TemporaryFolder folder = new TemporaryFolder();
 
     @Test
     public void testStringInput() throws InterruptedException, IOException {
         ICompiler compiler = createCompiler();
         compiler.addCompilationUnit("test", "int $a;");
-        compileAndCheck(compiler, "test","<?php\nnamespace{\n    $a;\n}\n?>");
+        compileAndCheck(compiler, "test", "<?php\nnamespace{\n    $a;\n}\n?>");
     }
 
     @Test
@@ -37,7 +37,7 @@ public class CompilerInputTest extends ACompilerTest
         ICompiler compiler = createCompiler();
         char[] chars = "int $a;".toCharArray();
         compiler.addCompilationUnit("test", chars, chars.length);
-        compileAndCheck(compiler,"test", "<?php\nnamespace{\n    $a;\n}\n?>");
+        compileAndCheck(compiler, "test", "<?php\nnamespace{\n    $a;\n}\n?>");
     }
 
     @Test
@@ -45,7 +45,7 @@ public class CompilerInputTest extends ACompilerTest
         ICompiler compiler = createCompiler();
         InputStream stream = new ByteArrayInputStream("int $a;".getBytes(StandardCharsets.UTF_8));
         compiler.addCompilationUnit("test", stream);
-        compileAndCheck(compiler,"test", "<?php\nnamespace{\n    $a;\n}\n?>");
+        compileAndCheck(compiler, "test", "<?php\nnamespace{\n    $a;\n}\n?>");
     }
 
     @Test
@@ -53,7 +53,7 @@ public class CompilerInputTest extends ACompilerTest
         ICompiler compiler = createCompiler();
         InputStream stream = new ByteArrayInputStream("int $a;".getBytes(StandardCharsets.UTF_8));
         compiler.addCompilationUnit("test", stream, "UTF-8");
-        compileAndCheck(compiler,"test", "<?php\nnamespace{\n    $a;\n}\n?>");
+        compileAndCheck(compiler, "test", "<?php\nnamespace{\n    $a;\n}\n?>");
     }
 
     @Test
@@ -62,7 +62,7 @@ public class CompilerInputTest extends ACompilerTest
         String testString = "int $a;";
         InputStream stream = new ByteArrayInputStream(testString.getBytes(StandardCharsets.UTF_8));
         compiler.addCompilationUnit("test", stream, 1024);
-        compileAndCheck(compiler,"test", "<?php\nnamespace{\n    $a;\n}\n?>");
+        compileAndCheck(compiler, "test", "<?php\nnamespace{\n    $a;\n}\n?>");
     }
 
     @Test
@@ -71,7 +71,7 @@ public class CompilerInputTest extends ACompilerTest
         String testString = "int $a;";
         InputStream stream = new ByteArrayInputStream(testString.getBytes(StandardCharsets.UTF_8));
         compiler.addCompilationUnit("test", stream, 1024, "UTF-8");
-        compileAndCheck(compiler,"test", "<?php\nnamespace{\n    $a;\n}\n?>");
+        compileAndCheck(compiler, "test", "<?php\nnamespace{\n    $a;\n}\n?>");
     }
 
     @Test
@@ -81,30 +81,30 @@ public class CompilerInputTest extends ACompilerTest
         String testString = "int $a;";
         InputStream stream = new ByteArrayInputStream(testString.getBytes(StandardCharsets.UTF_8));
         compiler.addCompilationUnit("test", stream, 16, 16, "UTF-8");
-        compileAndCheck(compiler,"test", "<?php\nnamespace{\n    $a;\n}\n?>");
+        compileAndCheck(compiler, "test", "<?php\nnamespace{\n    $a;\n}\n?>");
     }
 
     @Test
     public void testAddFile() throws InterruptedException, IOException {
         ICompiler compiler = createCompiler();
-        File file= folder.newFile("test.tsphp");
+        File file = folder.newFile("test.tsphp");
         PrintWriter writer = new PrintWriter(file);
         writer.println("int $a;");
         writer.close();
 
         compiler.addFile(file.getAbsolutePath());
-        compileAndCheck(compiler,file.getAbsolutePath(), "<?php\nnamespace{\n    $a;\n}\n?>");
+        compileAndCheck(compiler, file.getAbsolutePath(), "<?php\nnamespace{\n    $a;\n}\n?>");
     }
 
     @Test
     public void testAddFileIncludingEncoding() throws InterruptedException, IOException {
         ICompiler compiler = createCompiler();
-        File file= folder.newFile("test.tsphp");
-        PrintWriter writer = new PrintWriter(file,"UTF-8");
+        File file = folder.newFile("test.tsphp");
+        PrintWriter writer = new PrintWriter(file, "UTF-8");
         writer.println("int $a;");
         writer.close();
 
         compiler.addFile(file.getAbsolutePath(), "UTF-8");
-        compileAndCheck(compiler,file.getAbsolutePath(), "<?php\nnamespace{\n    $a;\n}\n?>");
+        compileAndCheck(compiler, file.getAbsolutePath(), "<?php\nnamespace{\n    $a;\n}\n?>");
     }
 }
