@@ -55,14 +55,14 @@ public class ACompilerTest
 
     protected void compileAndCheck(ICompiler compiler, String id, String translation) throws InterruptedException {
         compiler.compile();
-        lock.await(1000, TimeUnit.MILLISECONDS);
+        lock.await(2, TimeUnit.SECONDS);
+
         Assert.assertFalse(compiler.hasFoundError());
 
         Map<String, String> translations = compiler.getTranslations();
         assertThat(translations.size(), is(1));
         assertThat(translations.get(id).replaceAll("\r", ""), is(translation));
     }
-
 
     protected ICompiler createSlowCompiler() {
         Collection<ITranslatorFactory> translatorFactories = new ArrayDeque<>();
