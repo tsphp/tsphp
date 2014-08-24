@@ -60,7 +60,7 @@ public class CompilerErrorTest extends ACompilerTest
         compiler.registerErrorLogger(logger);
         compiler.addCompilationUnit("test", "int $a;");
 
-        lock.await(500, TimeUnit.MILLISECONDS);
+        lock.await(1000, TimeUnit.MILLISECONDS);
         assertThat(compiler.hasFoundError(), is(true));
         ArgumentCaptor<TSPHPException> captor = ArgumentCaptor.forClass(TSPHPException.class);
         verify(logger).log(captor.capture());
@@ -83,7 +83,7 @@ public class CompilerErrorTest extends ACompilerTest
         compiler.registerErrorLogger(logger);
         compiler.addCompilationUnit("test", "int $a;");
         compiler.compile();
-        lock.await(500, TimeUnit.MILLISECONDS);
+        lock.await(1000, TimeUnit.MILLISECONDS);
 
         assertThat(compiler.hasFoundError(), is(true));
         ArgumentCaptor<TSPHPException> captor = ArgumentCaptor.forClass(TSPHPException.class);
@@ -108,7 +108,7 @@ public class CompilerErrorTest extends ACompilerTest
         compiler.registerErrorLogger(logger);
         compiler.addCompilationUnit("test", "int $a;");
         compiler.compile();
-        lock.await(500, TimeUnit.MILLISECONDS);
+        lock.await(1000, TimeUnit.MILLISECONDS);
 
         assertThat(compiler.hasFoundError(), is(true));
         ArgumentCaptor<TSPHPException> captor = ArgumentCaptor.forClass(TSPHPException.class);
@@ -133,7 +133,7 @@ public class CompilerErrorTest extends ACompilerTest
         compiler.registerErrorLogger(logger);
         compiler.addCompilationUnit("test", "int $a;");
         compiler.compile();
-        lock.await(500, TimeUnit.MILLISECONDS);
+        lock.await(1000, TimeUnit.MILLISECONDS);
 
         assertThat(compiler.hasFoundError(), is(true));
         ArgumentCaptor<TSPHPException> captor = ArgumentCaptor.forClass(TSPHPException.class);
@@ -160,7 +160,7 @@ public class CompilerErrorTest extends ACompilerTest
         compiler.registerErrorLogger(logger);
         compiler.addCompilationUnit("test", "int $a;");
         compiler.compile();
-        lock.await(500, TimeUnit.MILLISECONDS);
+        lock.await(1000, TimeUnit.MILLISECONDS);
 
         assertThat(compiler.hasFoundError(), is(true));
         ArgumentCaptor<TSPHPException> captor = ArgumentCaptor.forClass(TSPHPException.class);
@@ -181,7 +181,7 @@ public class CompilerErrorTest extends ACompilerTest
         compiler.registerErrorLogger(logger);
         compiler.addCompilationUnit("test", "int $a;");
         compiler.compile();
-        lock.await(500, TimeUnit.MILLISECONDS);
+        lock.await(1000, TimeUnit.MILLISECONDS);
 
         assertThat(compiler.hasFoundError(), is(true));
         verify(logger).log(any(TSPHPException.class));
