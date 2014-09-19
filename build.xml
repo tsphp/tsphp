@@ -76,7 +76,7 @@
     </target>
 
     <target name="cp.all"
-            depends="cp.translator, cp.typechecker, cp.parser, cp.common"
-            description="copy common, parser and typechecker to the lib folder">
+            depends="cp.translator, cp.type-checker, cp.parser, cp.common"
+            description="copy common, parser and type checker to the lib folder">
     </target>
 </project>
