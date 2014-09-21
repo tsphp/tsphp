@@ -21,7 +21,8 @@
     <!-- setting source location -->
     <property name="lib" location="${basedir}/lib"/>
     <property name="libdev" location="${lib}/dev"/>
-    <property name="src" location="${basedir}/src"/>
+    <property name="src.name" value="src"/>
+    <property name="src" location="${basedir}/${src.name}"/>
     <property name="src.main" location="${src}"/>
     <property name="src.test" location="${basedir}/test"/>
 
@@ -52,7 +53,6 @@
         <fileset dir="${lib}">
             <include name="*.jar"/>
         </fileset>
-        <pathelement path="${libset.addon}"/>
     </path>
 
     <!-- define build-time libraries (simplified)-->
@@ -69,10 +69,30 @@
         <path refid="libsetdev"/>
     </path>
 
-    <!-- define path for test -->
-    <path id="unittestset">
+    <!-- define path for unit-test -->
+    <path id="unitTestClassPath">
         <path location="${test-classes}"/>
         <path refid="testset"/>
+    </path>
+
+    <!-- define path for checkStyle -->
+    <path id="checkStyleClassPath">
+        <path refid="libsetdev"/>
+    </path>
+
+    <!-- define path for cpd -->
+    <path id="cpdClassPath">
+        <path refid="libsetdev"/>
+    </path>
+
+    <!-- define path for findbugs -->
+    <path id="findbugsClassPath">
+        <path refid="libsetdev"/>
+    </path>
+
+    <!-- define path for pmd -->
+    <path id="pmdClassPath">
+        <path refid="libsetdev"/>
     </path>
 
     <!-- Taskdef for coverage -->
@@ -259,7 +279,7 @@
                     <exclude name="**/AllTest.java"/>
                 </fileset>
             </batchtest>
-            <classpath refid="unittestset"/>
+            <classpath refid="unitTestClassPath"/>
         </junit>
         <junit.report/>
         <coverage.report/>
@@ -291,7 +311,7 @@
                     <exclude name="**/AllTest.java"/>
                 </fileset>
             </batchtest>
-            <classpath refid="unittestset"/>
+            <classpath refid="unitTestClassPath"/>
         </junit>
         <junit.report dir="${junit.unit}"/>
         <coverage.report dir="${coverage.unit}" executiondata="${coverage.unit.data}"/>
@@ -319,8 +339,19 @@
     <!-- ================================================================== -->
     <!-- Target: checkstyle -->
     <!-- ================================================================== -->
+	<condition property="checkStyleExcludesIsSet">
+	  <not>
+		<equals arg1="${checkstyle.excludes}" arg2=""/>
+	  </not>
+	</condition>
+    <fileset id="checkStyleFileSet" dir="${basedir}">
+        <include name="${src.name}/**/*.java"/>
+        <exclude name="${src.name}/${checkstyle.excludes}" if="checkStyleExcludesIsSet"/>
+        <include name="antlr/*.g"/>
+    </fileset>
+
     <target name="checkstyle" depends="init" description="checkstyle report">
-        <taskdef resource="checkstyletask.properties" classpathref="libsetdev"/>
+        <taskdef resource="checkstyletask.properties" classpathref="checkStyleClassPath"/>
         <mkdir dir="${checkstyle}"/>
 
         <replaceReportProperty dir="${checkstyle.config}" file="checkstyle.properties"/>
@@ -330,7 +361,7 @@
                     failonviolation="false"
                     classpathref="libset">
             <formatter type="xml" toFile="${checkstyle}/checkstyle.xml"/>
-            <fileset dir="${src.main}" includes="**/*.java" excludes="${checkstyle.excludes}"/>
+            <fileset refid="checkStyleFileSet"/>
         </checkstyle>
         <xslt in="${checkstyle}/checkstyle.xml"
               out="${checkstyle}/index.html"
@@ -338,31 +369,10 @@
     </target>
 
     <!-- ================================================================== -->
-    <!-- Target: pmd -->
-    <!-- ================================================================== -->
-    <target name="pmd" depends="init" description="pmd report">
-        <taskdef name="pmd" classname="net.sourceforge.pmd.ant.PMDTask" classpathref="libsetdev"/>
-        <mkdir dir="${pmd}"/>
-
-        <replaceReportProperty dir="${pmd.config}" file="pmd_tsphp.xml"/>
-
-        <pmd rulesetfiles="${pmd.config}/pmd_tsphp.xml">
-            <formatter type="xml"
-                       toFile="${pmd}/pmd.xml"
-                       linkPrefix="../java2html/"/>
-            <fileset dir="${src.main}" includes="**/*.java" excludes="${pmd.excludes}"/>
-            <auxclasspath refid="libset"/>
-        </pmd>
-        <xslt in="${pmd}/pmd.xml"
-              out="${pmd}/index.html"
-              style="${libdev}/pmd/style/pmd-report-per-class.xslt"/>
-    </target>
-
-    <!-- ================================================================== -->
     <!-- Target: cpd -->
     <!-- ================================================================== -->
     <target name="cpd" depends="init" description="cpd report">
-        <taskdef name="cpd" classname="net.sourceforge.pmd.cpd.CPDTask" classpathref="libsetdev"/>
+        <taskdef name="cpd" classname="net.sourceforge.pmd.cpd.CPDTask" classpathref="cpdClassPath"/>
         <mkdir dir="${cpd}"/>
         <cpd minimumtokencount="80" outputFile="${cpd}/cpd.xml" format="xml">
             <fileset dir="${src.main}" includes="**/*.java" excludes="${cpd.excludes}"/>
@@ -374,7 +384,7 @@
     <!-- Target: findbugs -->
     <!-- ================================================================== -->
     <target name="findbugs" depends="init" description="findbugs report">
-        <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpathref="libsetdev"/>
+        <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpathref="findbugsClassPath"/>
         <mkdir dir="${findbugs}"/>
         <findbugs home="${libdev}/findbugs"
                   output="xml:withMessages"
@@ -391,6 +401,27 @@
             <fileset dir="${classes}" includes="**/*.class" excludes="${findbugs.excludes}"/>
         </findbugs>
         <xslt in="${findbugs}/findbugs.xml" out="${findbugs}/index.html" style="${libdev}/findbugs/style/fancy.xsl"/>
+    </target>
+
+    <!-- ================================================================== -->
+    <!-- Target: pmd -->
+    <!-- ================================================================== -->
+    <target name="pmd" depends="init" description="pmd report">
+        <taskdef name="pmd" classname="net.sourceforge.pmd.ant.PMDTask" classpathref="pmdClassPath"/>
+        <mkdir dir="${pmd}"/>
+
+        <replaceReportProperty dir="${pmd.config}" file="pmd_tsphp.xml"/>
+
+        <pmd rulesetfiles="${pmd.config}/pmd_tsphp.xml">
+            <formatter type="xml"
+                       toFile="${pmd}/pmd.xml"
+                       linkPrefix="../java2html/"/>
+            <fileset dir="${src.main}" includes="**/*.java" excludes="${pmd.excludes}"/>
+            <auxclasspath refid="libset"/>
+        </pmd>
+        <xslt in="${pmd}/pmd.xml"
+              out="${pmd}/index.html"
+              style="${libdev}/pmd/style/pmd-report-per-class.xslt"/>
     </target>
 
     <!-- ================================================================== -->
