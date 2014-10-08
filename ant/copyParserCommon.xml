@@ -1,0 +1,17 @@
+<!--
+  This file is part of the TSPHP project published under the Apache License 2.0
+  For the full copyright and license information, please have a look at LICENSE in the
+  root folder or visit the project's website http://tsphp.ch/wiki/display/TSPHP/License
+  -->
+
+<project name="copyParserCommon" basedir="../">
+
+    <import file="${basedir}/ant/build-common.xml" as="common"/>
+
+    <property name="parser-common.jar" location="${basedir}/../tsphp-parser-common/build/lib"/>
+
+    <target name="parser-common" depends="" description="copy parser-common library to the lib folder">
+        <copyComponent dir="${parser-common.jar}" includes="TSPHP-parser-common-*.jar"/>
+    </target>
+
+</project>

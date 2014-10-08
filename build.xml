@@ -9,6 +9,7 @@
     <property environment="env"/>
     <import file="${basedir}/ant/build-common.xml" as="common"/>
     <import file="${basedir}/ant/copyCommon.xml" as="cp"/>
+    <import file="${basedir}/ant/copyParserCommon.xml" as="cp"/>
     <import file="${basedir}/ant/copyParserTypeCheckerTranslator.xml" as="cp"/>
 
     <!-- ================================================================== -->
@@ -76,7 +77,7 @@
     </target>
 
     <target name="cp.all"
-            depends="cp.translator, cp.type-checker, cp.parser, cp.common"
+            depends="cp.translator, cp.type-checker, cp.parser, cp.parser-common, cp.common"
             description="copy common, parser and type checker to the lib folder">
     </target>
 </project>
