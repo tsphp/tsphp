@@ -6,22 +6,22 @@
   -->
 
 <ruleset name="TSPHP"
-    xmlns="http://pmd.sf.net/ruleset/1.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://pmd.sf.net/ruleset/1.0.0 http://pmd.sf.net/ruleset_xml_schema.xsd"
-    xsi:noNamespaceSchemaLocation="http://pmd.sf.net/ruleset_xml_schema.xsd">
-  <description>PMD Ruleset for TSPHP</description>
-  <rule ref="@DIR@/rulesets/basic.xml"/>
-  <rule ref="@DIR@/rulesets/braces.xml" />
-  <rule ref="@DIR@/rulesets/clone.xml" />
-  <rule ref="@DIR@/rulesets/codesize.xml" />
-  <rule ref="@DIR@/rulesets/coupling.xml" />
-  <rule ref="@DIR@/rulesets/design.xml" />
-  <rule ref="@DIR@/rulesets/finalizers.xml" />
-  <rule ref="@DIR@/rulesets/imports.xml" />
-  <rule ref="@DIR@/rulesets/naming.xml" />
-  <rule ref="@DIR@/rulesets/optimizations.xml" />
-  <rule ref="@DIR@/rulesets/strings.xml" />
-  <rule ref="@DIR@/rulesets/typeresolution.xml" />
-  <rule ref="@DIR@/rulesets/unusedcode.xml"/>
+         xmlns="http://pmd.sf.net/ruleset/1.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sf.net/ruleset/1.0.0 http://pmd.sf.net/ruleset_xml_schema.xsd"
+         xsi:noNamespaceSchemaLocation="http://pmd.sf.net/ruleset_xml_schema.xsd">
+    <description>PMD Ruleset for TSPHP</description>
+    <rule ref="@DIR@/rulesets/basic.xml"/>
+    <rule ref="@DIR@/rulesets/braces.xml"/>
+    <rule ref="@DIR@/rulesets/clone.xml"/>
+    <rule ref="@DIR@/rulesets/codesize.xml"/>
+    <rule ref="@DIR@/rulesets/coupling.xml"/>
+    <rule ref="@DIR@/rulesets/design.xml"/>
+    <rule ref="@DIR@/rulesets/finalizers.xml"/>
+    <rule ref="@DIR@/rulesets/imports.xml"/>
+    <rule ref="@DIR@/rulesets/naming.xml"/>
+    <rule ref="@DIR@/rulesets/optimizations.xml"/>
+    <rule ref="@DIR@/rulesets/strings.xml"/>
+    <rule ref="@DIR@/rulesets/typeresolution.xml"/>
+    <rule ref="@DIR@/rulesets/unusedcode.xml"/>
 </ruleset>

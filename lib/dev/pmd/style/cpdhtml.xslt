@@ -46,16 +46,16 @@
                     </tr>
                     <tr>
                         <td class="SummaryNumber">
-                            <xsl:value-of select="count(//duplication[@lines])"/>
+                            <xsl:value-of select="count(//duplication[@lines>30])"/>
                         </td>
                         <td class="SummaryNumber">
-                            <xsl:value-of select="sum(//duplication[@lines]/@lines)"/>
+                            <xsl:value-of select="sum(//duplication[@lines>30]/@lines)"/>
                         </td>
                         <td class="SummaryNumber">
-                            <xsl:value-of select="sum(//duplication[@lines]/@tokens)"/>
+                            <xsl:value-of select="sum(//duplication[@lines>30]/@tokens)"/>
                         </td>
                         <td class="SummaryNumber">
-                            <xsl:value-of select="sum(//duplication[@lines]/@tokens) * 4"/>
+                            <xsl:value-of select="sum(//duplication[@lines>30]/@tokens) * 4"/>
                         </td>
                     </tr>
                 </table>
@@ -70,7 +70,7 @@
                         <td>Files</td>
                         <td>Lines</td>
                     </tr>
-                    <xsl:for-each select="//duplication[@lines]">
+                    <xsl:for-each select="//duplication[@lines>30]">
                         <xsl:sort data-type="number" order="descending" select="@lines"/>
                         <tr>
                             <td class="ItemNumber">
@@ -82,7 +82,7 @@
                                         <tr>
                                             <td>
                                                 <a>
-                                                    <xsl:attribute name="href"><xsl:value-of select="@path"/>.html#<xsl:value-of
+                                                    <xsl:attribute name="href">../src/<xsl:value-of select="@path"/>.html#<xsl:value-of
                                                             select="@line"/>
                                                     </xsl:attribute>
                                                     <xsl:value-of select="@path"/>

@@ -1,0 +1,36 @@
+<!--
+  This file is part of the TSPHP project published under the Apache License 2.0
+  For the full copyright and license information, please have a look at LICENSE in the
+  root folder or visit the project's website http://tsphp.ch/wiki/display/TSPHP/License
+  -->
+
+<project name="copyQA" basedir="../">
+
+    <import file="${basedir}/ant/build-common.xml" as="common"/>
+
+    <property name="grammar-convention" location="${basedir}/../tsphp-grammar-convention"/>
+    <property name="grammar-convention.libdev" location="${basedir}/../tsphp-grammar-convention/lib/dev"/>
+    <property name="grammar-convention.jar" location="${grammar-convention}/build/lib"/>
+
+    <target name="QA" depends=""
+            description="first deletes all quality assurance tools from the lib folder as well
+            as the grammar convention jar and then copy them back again from the grammar-convention component">
+        <delete includeemptydirs="true" dir="${libdev}/checkstyle"/>
+        <delete includeemptydirs="true" dir="${libdev}/findbugs"/>
+        <delete includeemptydirs="true" dir="${libdev}/pmd"/>
+        <delete includeemptydirs="true" dir="${libdev}/jacoco"/>
+        <copy todir="${libdev}" overwrite="true">
+            <fileset dir="${grammar-convention.libdev}">
+                <include name="checkstyle/**/*"/>
+                <include name="findbugs/**/*"/>
+                <include name="pmd/**/*"/>
+                <include name="jacoco/**/*"/>
+                <include name="tpl.QA.html"/>
+            </fileset>
+        </copy>
+        <copy todir="${libdev}/checkstyle">
+            <fileset dir="${grammar-convention.jar}" includes="TSPHP-grammar-convention-*.jar"/>
+        </copy>
+    </target>
+
+</project>

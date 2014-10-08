@@ -73,7 +73,7 @@ Following adoptions are applied to the original file from checkstyle:
     <!-- See http://checkstyle.sf.net/config_header.html   -->
     <module name="Header">
         <property name="headerFile" value="${checkstyle.header.file}"/>
-        <property name="fileExtensions" value="java"/>
+        <property name="fileExtensions" value="java, g"/>
     </module>
 
     <module name="TreeWalker">
@@ -169,8 +169,12 @@ Following adoptions are applied to the original file from checkstyle:
             <property name="severity" value="warning"/>
         </module>
         <module name="InnerAssignment"/>
-        <module name="MagicNumber"/>
-        <module name="MissingSwitchDefault"/>
+        <module name="MagicNumber">
+            <property name="severity" value="warning"/>
+        </module>
+        <module name="MissingSwitchDefault">
+            <property name="severity" value="warning"/>
+        </module>
         <!-- <module name="MissingCtor"/> -->
         <module name="ModifiedControlVariable">
             <property name="severity" value="warning"/>
@@ -350,8 +354,25 @@ Following adoptions are applied to the original file from checkstyle:
         <module name="TypecastParenPad"/>
         <module name="WhitespaceAfter"/>
         <module name="WhitespaceAround"/>
-
     </module>
+
+    <module name="ch.tsphp.grammarconvention.GrammarWalker">
+        <module name="ch.tsphp.grammarconvention.checks.HeaderCheck">
+            <property name="headerFile" value="${checkstyle.header.file}"/>
+        </module>
+        <module name="ch.tsphp.grammarconvention.checks.OptionsIndentationCheck"/>
+        <module name="ch.tsphp.grammarconvention.checks.OptionsSpaceCheck"/>
+        <module name="ch.tsphp.grammarconvention.checks.RuleColonSemicolonCheck"/>
+        <module name="ch.tsphp.grammarconvention.checks.TokensIndentationCheck"/>
+        <module name="ch.tsphp.grammarconvention.checks.TokensNamingCheck"/>
+        <!-- decided that this rule is rather unpractical, it should be in alphabetical order more or less but it
+        should still be possible to define logical order such as TypeBool, TypeInt, TypeFloat
+         in alphabetical order TypeFloat would need to be before TypeInt
+        -->
+        <!--<module name="ch.tsphp.grammarconvention.checks.TokensOrderCheck"/>-->
+        <module name="ch.tsphp.grammarconvention.checks.TokensSpaceCheck"/>
+    </module>
+
     <module name="SuppressionCommentFilter">
         <property name="offCommentFormat" value="CHECKSTYLE\:OFF\:([\w\|]+)"/>
         <property name="onCommentFormat" value="CHECKSTYLE\:ON\:([\w\|]+)"/>

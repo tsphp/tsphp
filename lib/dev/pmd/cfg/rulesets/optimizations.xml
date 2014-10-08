@@ -8,49 +8,47 @@
     <description>
         These rules deal with different optimizations that generally apply to performance best practices.
     </description>
-<!--
-    <rule name="LocalVariableCouldBeFinal"
-          since="2.2"
-          message="Local variable ''{0}'' could be declared final"
-          class="net.sourceforge.pmd.rules.optimization.LocalVariableCouldBeFinal"
-          externalInfoUrl="http://pmd.sourceforge.net/rules/optimizations.html#LocalVariableCouldBeFinal">
-        <description>
-            A local variable assigned only once can be declared final.
-        </description>
-        <priority>5</priority>
-        <example>
-            <![CDATA[
-public class Bar {
- public void foo () {
-  String a = "a"; //if a will not be assigned again it is better to do this:
-  final String b = "b";
- }
-}
-  ]]>
-        </example>
-    </rule>
+    <!--
+        <rule name="LocalVariableCouldBeFinal"
+              since="2.2"
+              message="Local variable ''{0}'' could be declared final"
+              class="net.sourceforge.pmd.rules.optimization.LocalVariableCouldBeFinal"
+              externalInfoUrl="http://pmd.sourceforge.net/rules/optimizations.html#LocalVariableCouldBeFinal">
+            <description>
+                A local variable assigned only once can be declared final.
+            </description>
+            <priority>5</priority>
+            <example>
+                <![CDATA[
+    public class Bar {
+     public void foo () {
+      String a = "a"; //if a will not be assigned again it is better to do this:
+      final String b = "b";
+     }
+    }
+      ]]>
+            </example>
+        </rule>
 
-    
-    <rule name="MethodArgumentCouldBeFinal"
-             since="2.2"
-          message="Parameter ''{0}'' is not assigned and could be declared final"
-          class="net.sourceforge.pmd.rules.optimization.MethodArgumentCouldBeFinal"
-          externalInfoUrl="http://pmd.sourceforge.net/rules/optimizations.html#MethodArgumentCouldBeFinal">
-      <description>
-A method argument that is never assigned can be declared final.
-      </description>
-        <priority>5</priority>
-      <example>
-  <![CDATA[
-public void foo (String param) {
-  // do stuff with param never assigning it
-  // better: public void foo (final String param) {
-}
-  ]]>
-    </example>
-    </rule>
+        <rule name="MethodArgumentCouldBeFinal"
+              since="2.2"
+              message="Parameter ''{0}'' is not assigned and could be declared final"
+              class="net.sourceforge.pmd.rules.optimization.MethodArgumentCouldBeFinal"
+              externalInfoUrl="http://pmd.sourceforge.net/rules/optimizations.html#MethodArgumentCouldBeFinal">
+            <description>
+                A method argument that is never assigned can be declared final.
+            </description>
+            <priority>5</priority>
+            <example>
+                <![CDATA[
+    public void foo (String param) {
+      // do stuff with param never assigning it
+      // better: public void foo (final String param) {
+    }
+      ]]>
+            </example>
+        </rule>
     -->
-
     <rule name="AvoidInstantiatingObjectsInLoops"
           since="2.2"
           message="Avoid instantiating new objects inside loops"

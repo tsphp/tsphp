@@ -78,6 +78,9 @@
     <!-- define path for checkStyle -->
     <path id="checkStyleClassPath">
         <path refid="libsetdev"/>
+        <fileset dir="${lib}">
+            <include name="antlr*.jar"/>
+        </fileset>
     </path>
 
     <!-- define path for cpd -->
@@ -94,11 +97,6 @@
     <path id="pmdClassPath">
         <path refid="libsetdev"/>
     </path>
-
-    <!-- Taskdef for coverage -->
-    <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
-        <classpath path="${libdev}/jacoco/jacocoant.jar"/>
-    </taskdef>
 
     <!--====================================================================-->
     <!-- info -->
@@ -258,6 +256,9 @@
     <!-- Target: test -->
     <!-- ================================================================== -->
     <target name="test" depends="jar" description="executes all junit tests">
+        <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
+            <classpath path="${libdev}/jacoco/jacocoant.jar"/>
+        </taskdef>
         <mkdir dir="${junit}"/>
         <mkdir dir="${coverage}"/>
         <touch file="${coverage.data}"/>
@@ -290,6 +291,9 @@
     <!-- Target: unittest, to see how much unit-tests are covering-->
     <!-- ================================================================== -->
     <target name="unittest" depends="jar" description="executes junit (real) unit tests">
+        <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
+            <classpath path="${libdev}/jacoco/jacocoant.jar"/>
+        </taskdef>
         <mkdir dir="${junit.unit}"/>
         <mkdir dir="${coverage.unit}"/>
         <touch file="${coverage.unit.data}"/>
@@ -325,7 +329,7 @@
             depends="jar, checkstyle, pmd, cpd, findbugs, QAreport"
             description="complete reports">
     </target>
-    
+
     <!-- ================================================================== -->
     <!-- Target: QA report -->
     <!-- ================================================================== -->
@@ -339,11 +343,11 @@
     <!-- ================================================================== -->
     <!-- Target: checkstyle -->
     <!-- ================================================================== -->
-	<condition property="checkStyleExcludesIsSet">
-	  <not>
-		<equals arg1="${checkstyle.excludes}" arg2=""/>
-	  </not>
-	</condition>
+    <condition property="checkStyleExcludesIsSet">
+        <not>
+            <equals arg1="${checkstyle.excludes}" arg2=""/>
+        </not>
+    </condition>
     <fileset id="checkStyleFileSet" dir="${basedir}">
         <include name="${src.name}/**/*.java"/>
         <exclude name="${src.name}/${checkstyle.excludes}" if="checkStyleExcludesIsSet"/>
